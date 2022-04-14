@@ -11,7 +11,7 @@
     "lint:fix": "npm run lint -- --fix",
     "postinstall": "husky install",
     "postpublish": "pinst --enable",
-    "prepublishOnly": "pinst --disable && npm run lint && npm run tsc && npm test && npm run clean && npm run build",
+    "prepublishOnly": "pinst --disable && npm run lint && npm run tsc && npm run test:ci && npm run clean && npm run build",
     "test": "jest --watch",
     "test:ci": "jest --ci --colors --coverage",
     "tsc": "tsc --noEmit"
