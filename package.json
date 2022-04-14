@@ -1,0 +1,64 @@
+{
+  "name": "paccurate",
+  "version": "1.0.0-alpha",
+  "description": "Reduce fulfillment costs and wasted material by finding the optimal way to pack every shipment, in real time.",
+  "author": "Mark <mark@remarkablemark.org>",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf coverage lib",
+    "lint": "eslint --ignore-path .gitignore --ext .js,.ts .",
+    "lint:fix": "npm run lint -- --fix",
+    "postinstall": "husky install",
+    "postpublish": "pinst --enable",
+    "prepublishOnly": "pinst --disable && npm run lint && npm run tsc && npm test && npm run clean && npm run build",
+    "test": "jest --watch",
+    "test:ci": "jest --ci --colors --coverage",
+    "tsc": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remarkablemark/paccurate"
+  },
+  "bugs": {
+    "url": "https://github.com/remarkablemark/paccurate/issues"
+  },
+  "keywords": [
+    "paccurate",
+    "pack",
+    "ship",
+    "rest",
+    "api"
+  ],
+  "dependencies": {
+    "@types/node-fetch": "2",
+    "node-fetch": "2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.23",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "eslint": "^8.13.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "7.0.0",
+    "eslint-plugin-tsdoc": "0.2.16",
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "lint-staged": "^12.3.7",
+    "pinst": "^3.0.0",
+    "prettier": "^2.6.2",
+    "standard-version": "^9.3.2",
+    "ts-jest": "^27.1.4",
+    "typescript": "^4.6.3"
+  },
+  "files": [
+    "lib/"
+  ],
+  "engines": {
+    "node": ">=4"
+  },
+  "license": "MIT"
+}
