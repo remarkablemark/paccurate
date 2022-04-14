@@ -6,7 +6,7 @@
 [![build](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/remarkablemark/paccurate/branch/master/graph/badge.svg?token=LQAQTQE0QI)](https://codecov.io/gh/remarkablemark/paccurate)
 
-Node.js client library for [Paccurate](https://paccurate.io/).
+Node.js client library for [Paccurate](https://paccurate.io/). See [demo](https://replit.com/@remarkablemark/paccurate).
 
 ## Quick Start
 
