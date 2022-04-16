@@ -5,15 +5,16 @@
   "author": "Mark <mark@remarkablemark.org>",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "clean": "rm -rf coverage lib",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts .",
     "lint:fix": "npm run lint -- --fix",
     "postinstall": "husky install",
     "postpublish": "pinst --enable",
     "prepublishOnly": "pinst --disable && npm run lint && npm run tsc && npm run test:ci && npm run clean && npm run build",
-    "test": "jest --watch",
+    "test": "jest",
     "test:ci": "jest --ci --colors --coverage",
+    "test:watch": "jest --watch",
     "tsc": "tsc --noEmit"
   },
   "repository": {
