@@ -1,2 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Body = Record<string, any>
+import type { definitions, paths } from './swagger'
+
+export type Body = definitions['Pack']
+export type Response = paths['/']['post']['responses']['200']['schema']

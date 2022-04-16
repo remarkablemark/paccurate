@@ -20,5 +20,14 @@
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": "error",
     "tsdoc/syntax": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/swagger.ts"],
+      "rules": {
+        "@typescript-eslint/no-empty-interface": "off",
+        "tsdoc/syntax": "off"
+      }
+    }
+  ]
 }

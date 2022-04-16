@@ -6,7 +6,7 @@
 [![build](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/remarkablemark/paccurate/branch/master/graph/badge.svg?token=LQAQTQE0QI)](https://codecov.io/gh/remarkablemark/paccurate)
 
-Node.js client library for [Paccurate](https://paccurate.io/). See [demo](https://replit.com/@remarkablemark/paccurate).
+Node.js client library for [Paccurate](https://paccurate.io/) (see [demo](https://replit.com/@remarkablemark/paccurate)). The types are generated from [Paccurate Swagger v1.5.4](https://api.paccurate.io/static/api/1.5.4/swagger.yaml).
 
 ## Quick Start
 
@@ -20,6 +20,7 @@ const data = await pack({
       refId: 0,
       dimensions: { x: 5.5, y: 6, z: 6 },
       quantity: 3,
+      weight: 4.5,
     },
   ],
   boxTypeSets: ['fedex'],
@@ -68,7 +69,7 @@ paccurate
   .catch((error) => console.error(error.code, error.message))
 ```
 
-Or using ES Modules and async-await:
+The same can be done with ES Modules and async-await:
 
 ```ts
 import { Paccurate } from 'paccurate'
@@ -87,6 +88,12 @@ async function main() {
 }
 
 main()
+```
+
+TypeScript users can import the types:
+
+```ts
+import type { Body, Response } from 'paccurate'
 ```
 
 ## Release

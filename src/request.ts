@@ -1,7 +1,7 @@
 import type { RequestInit } from 'node-fetch'
 import fetch from 'node-fetch'
 
-import type { Body } from './types'
+import type { Body, Response } from './types'
 
 const method = 'POST'
 const url = 'https://api.paccurate.io/'
@@ -19,7 +19,7 @@ class ResponseError extends Error {
  * @param options - Request options.
  * @returns - Pack response.
  */
-export async function post(body: Body, options?: RequestInit) {
+export async function post(body: Body, options?: RequestInit): Promise<Response> {
   const response = await fetch(url, {
     body: JSON.stringify(body),
     method,
