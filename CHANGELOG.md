@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://www.github.com/remarkablemark/paccurate/compare/v1.0.0...v1.1.0) (2022-04-16)
+
+
+### Features
+
+* generate swagger.ts given paccurate swagger version 1.5.4 ([fa49fbd](https://www.github.com/remarkablemark/paccurate/commit/fa49fbdeaa317c84b6e51d923097aebbe40c7bd1))
+* use and export paccurate swagger types ([43b8a67](https://www.github.com/remarkablemark/paccurate/commit/43b8a67477ab46620e1d95f1200fbb6fb5c00fc3))
+
 ## 1.0.0 (2022-04-14)
 
 
