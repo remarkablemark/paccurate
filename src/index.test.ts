@@ -3,7 +3,7 @@ import type { Body } from './types'
 
 const { PACCURATE_API_KEY } = process.env
 
-const body = {
+const body: Body = {
   itemSets: [
     {
       refId: 0,
@@ -13,6 +13,7 @@ const body = {
         z: 6,
       },
       quantity: 3,
+      weight: 4.5,
     },
   ],
   boxTypeSets: ['fedex'],
