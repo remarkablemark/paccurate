@@ -28,6 +28,8 @@ jobs:
 
       - name: Run tests
         run: npm run test:ci
+        env:
+          PACCURATE_API_KEY: ${{ secrets.PACCURATE_API_KEY }}
 
       - name: Codecov
         uses: codecov/codecov-action@v2
