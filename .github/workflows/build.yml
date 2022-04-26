@@ -7,7 +7,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -32,4 +32,4 @@ jobs:
           PACCURATE_API_KEY: ${{ secrets.PACCURATE_API_KEY }}
 
       - name: Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
