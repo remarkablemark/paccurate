@@ -3,23 +3,23 @@ import fetch from 'node-fetch'
 
 import type { Body, Response } from './types'
 
-const method = 'POST'
-const url = 'https://api.paccurate.io/'
-
 class ResponseError extends Error {
   constructor(public code: number, message: string) {
     super(message)
   }
 }
 
+const method = 'POST'
+
 /**
  * Sends a post request to Paccurate API.
  *
+ * @param url - API endpoint.
  * @param body - Packing configuration.
  * @param options - Request options.
  * @returns - Pack response.
  */
-export async function post(body: Body, options?: RequestInit): Promise<Response> {
+export async function post(url: string, body: Body, options?: RequestInit): Promise<Response> {
   const response = await fetch(url, {
     body: JSON.stringify(body),
     method,
