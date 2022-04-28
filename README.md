@@ -90,7 +90,44 @@ async function main() {
 main()
 ```
 
-TypeScript users can import the types:
+### API Endpoint
+
+There are two endpoints to send requests based on your usage.
+
+| Endpoint                        | Description                                         |
+| ------------------------------- | --------------------------------------------------- |
+| https://api.paccurate.io/       | 30-second timeout, best for real-time (default)     |
+| https://cloud.api.paccurate.io/ | 1 hour timeout, best for large, parallel batch jobs |
+
+Instantiating class with endpoint:
+
+```ts
+import { Paccurate } from 'paccurate'
+
+new Paccurate('YOUR_API_KEY', 'https://cloud.api.paccurate.io/')
+await paccurate.pack(data)
+```
+
+Or passing endpoint in method call:
+
+```ts
+import { Paccurate } from 'paccurate'
+
+const paccurate = new Paccurate('YOUR_API_KEY')
+await paccurate.pack(data, 'https://cloud.api.paccurate.io/')
+```
+
+Or passing endpoint in function call:
+
+```ts
+import { pack } from 'paccurate'
+
+await pack(data, 'https://cloud.api.paccurate.io/')
+```
+
+### TypeScript
+
+The following types are available:
 
 ```ts
 import type { Body, Response } from 'paccurate'
