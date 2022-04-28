@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/remarkablemark/paccurate/compare/v1.1.0...v1.2.0) (2022-04-28)
+
+
+### Features
+
+* allow custom API endpoint to be passed ([f29f006](https://github.com/remarkablemark/paccurate/commit/f29f006d057ddea148324c510a5df58cef428899)), closes [#7](https://github.com/remarkablemark/paccurate/issues/7)
+
 ## [1.1.0](https://www.github.com/remarkablemark/paccurate/compare/v1.0.0...v1.1.0) (2022-04-16)
 
 
