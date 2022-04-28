@@ -16,8 +16,13 @@ beforeEach(() => {
 })
 
 describe('pack', () => {
-  it('sends post request with body and returns response', async () => {
+  it('sends post request to default endpoint', async () => {
     expect(await pack(body)).toBe(data)
-    expect(mockedPost).toBeCalledWith(body)
+    expect(mockedPost).toBeCalledWith('https://api.paccurate.io/', body)
+  })
+
+  it('sends post request to cloud endpoint', async () => {
+    expect(await pack(body, 'https://cloud.api.paccurate.io/')).toBe(data)
+    expect(mockedPost).toBeCalledWith('https://cloud.api.paccurate.io/', body)
   })
 })

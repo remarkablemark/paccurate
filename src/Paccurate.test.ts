@@ -17,10 +17,21 @@ beforeEach(() => {
 })
 
 describe('Paccurate', () => {
-  it('sends post request with body and returns response', async () => {
+  it('sends post request to default endpoint', async () => {
     const paccurate = new Paccurate(apiKey)
     expect(await paccurate.pack(body)).toBe(data)
-    expect(mockedPost).toBeCalledWith(body, {
+    expect(mockedPost).toBeCalledWith('https://api.paccurate.io/', body, {
+      headers: {
+        Authorization: `apikey ${apiKey}`,
+      },
+    })
+  })
+
+  it('sends post request to cloud endpoint', async () => {
+    const apiUrl = 'https://cloud.api.paccurate.io/'
+    const paccurate = new Paccurate(apiKey, apiUrl)
+    expect(await paccurate.pack(body)).toBe(data)
+    expect(mockedPost).toBeCalledWith(apiUrl, body, {
       headers: {
         Authorization: `apikey ${apiKey}`,
       },
