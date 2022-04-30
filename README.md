@@ -92,42 +92,44 @@ main()
 
 ### API Endpoint
 
-There are two endpoints to send requests based on your usage.
+The request can be sent to two endpoints:
 
 | Endpoint                        | Description                                         |
 | ------------------------------- | --------------------------------------------------- |
-| https://api.paccurate.io/       | 30-second timeout, best for real-time (default)     |
+| https://api.paccurate.io/       | 30-second timeout, best for real-time               |
 | https://cloud.api.paccurate.io/ | 1 hour timeout, best for large, parallel batch jobs |
 
-Instantiating class with endpoint:
+The default endpoint is https://api.paccurate.io/. To send to a different endpoint, you can:
 
-```ts
-import { Paccurate } from 'paccurate'
+1. Instantiate with endpoint:
 
-new Paccurate('YOUR_API_KEY', 'https://cloud.api.paccurate.io/')
-await paccurate.pack(data)
-```
+   ```ts
+   import { Paccurate } from 'paccurate'
 
-Or passing endpoint in method call:
+   const paccurate = new Paccurate('YOUR_API_KEY', 'https://cloud.api.paccurate.io/')
+   paccurate.pack(data)
+   ```
 
-```ts
-import { Paccurate } from 'paccurate'
+2. Call method with endpoint:
 
-const paccurate = new Paccurate('YOUR_API_KEY')
-await paccurate.pack(data, 'https://cloud.api.paccurate.io/')
-```
+   ```ts
+   import { Paccurate } from 'paccurate'
 
-Or passing endpoint in function call:
+   const paccurate = new Paccurate('YOUR_API_KEY')
+   paccurate.pack(data, 'https://cloud.api.paccurate.io/')
+   ```
 
-```ts
-import { pack } from 'paccurate'
+3. Call function with endpoint:
 
-await pack(data, 'https://cloud.api.paccurate.io/')
-```
+   ```ts
+   import { pack } from 'paccurate'
+
+   pack(data, 'https://cloud.api.paccurate.io/')
+   ```
 
 ### TypeScript
 
-The following types are available:
+The following types are exported:
 
 ```ts
 import type { Body, Response } from 'paccurate'
