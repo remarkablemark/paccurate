@@ -129,7 +129,7 @@ The default endpoint is https://api.paccurate.io/. To send to a different endpoi
 
 ### TypeScript
 
-The following types are exported:
+The following types can be imported:
 
 ```ts
 import type { Body, Response } from 'paccurate'
