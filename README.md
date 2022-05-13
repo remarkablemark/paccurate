@@ -78,7 +78,7 @@ const paccurate = new Paccurate('YOUR_API_KEY')
 
 async function main() {
   try {
-    const data = await pack({
+    const data = await paccurate.pack({
       // ...
     })
     console.dir(data, { depth: null })
@@ -107,7 +107,7 @@ The default endpoint is https://api.paccurate.io/. To send to a different endpoi
    import { Paccurate } from 'paccurate'
 
    const paccurate = new Paccurate('YOUR_API_KEY', 'https://cloud.api.paccurate.io/')
-   paccurate.pack(data)
+   await paccurate.pack(data)
    ```
 
 2. Call method with endpoint:
@@ -116,7 +116,7 @@ The default endpoint is https://api.paccurate.io/. To send to a different endpoi
    import { Paccurate } from 'paccurate'
 
    const paccurate = new Paccurate('YOUR_API_KEY')
-   paccurate.pack(data, 'https://cloud.api.paccurate.io/')
+   await paccurate.pack(data, 'https://cloud.api.paccurate.io/')
    ```
 
 3. Call function with endpoint:
@@ -124,7 +124,7 @@ The default endpoint is https://api.paccurate.io/. To send to a different endpoi
    ```ts
    import { pack } from 'paccurate'
 
-   pack(data, 'https://cloud.api.paccurate.io/')
+   await pack(data, 'https://cloud.api.paccurate.io/')
    ```
 
 ### TypeScript
