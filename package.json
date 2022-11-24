@@ -50,7 +50,7 @@
     "husky": "^8.0.1",
     "jest": "^28.1.2",
     "lint-staged": "^13.0.3",
-    "openapi-typescript": "6.0.3",
+    "openapi-typescript": "6.1.0",
     "pinst": "^3.0.0",
     "prettier": "^2.7.1",
     "standard-version": "^9.5.0",
