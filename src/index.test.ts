@@ -42,13 +42,13 @@ describe('Paccurate', () => {
           version: expect.any(String),
         },
         `
-        Object {
+        {
           "boxTypeChoiceGoalUsed": "lowest-cost",
           "boxes": Any<Array>,
           "built": Any<String>,
           "host": "api.paccurate.io",
           "itemSortUsed": "none",
-          "leftovers": Array [],
+          "leftovers": [],
           "lenBoxes": 1,
           "lenItems": 3,
           "lenLeftovers": 0,
@@ -84,13 +84,13 @@ describe('Paccurate', () => {
           version: expect.any(String),
         },
         `
-        Object {
+        {
           "boxTypeChoiceGoalUsed": "lowest-cost",
           "boxes": Any<Array>,
           "built": Any<String>,
           "host": "cloud.api.paccurate.io",
           "itemSortUsed": "none",
-          "leftovers": Array [],
+          "leftovers": [],
           "lenBoxes": 1,
           "lenItems": 3,
           "lenLeftovers": 0,
@@ -140,13 +140,13 @@ describe('pack', () => {
           version: expect.any(String),
         },
         `
-        Object {
+        {
           "boxTypeChoiceGoalUsed": "lowest-cost",
           "boxes": Any<Array>,
           "built": Any<String>,
           "host": "api.paccurate.io",
           "itemSortUsed": "none",
-          "leftovers": Array [],
+          "leftovers": [],
           "lenBoxes": 1,
           "lenItems": 3,
           "lenLeftovers": 0,
@@ -184,13 +184,13 @@ describe('pack', () => {
           version: expect.any(String),
         },
         `
-        Object {
+        {
           "boxTypeChoiceGoalUsed": "lowest-cost",
           "boxes": Any<Array>,
           "built": Any<String>,
           "host": "cloud.api.paccurate.io",
           "itemSortUsed": "none",
-          "leftovers": Array [],
+          "leftovers": [],
           "lenBoxes": 1,
           "lenItems": 3,
           "lenLeftovers": 0,
