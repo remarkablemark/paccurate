@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/remarkablemark/paccurate/compare/v1.2.0...v1.3.0) (2023-02-26)
+
+
+### Features
+
+* update types for paccurate version 1.5.7 ([6560824](https://github.com/remarkablemark/paccurate/commit/6560824d2176b9b044f57e993fc4c706d9a4ee78))
+
 ## [1.2.0](https://github.com/remarkablemark/paccurate/compare/v1.1.0...v1.2.0) (2022-04-28)
 
 
