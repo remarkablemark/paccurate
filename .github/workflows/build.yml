@@ -17,6 +17,9 @@ jobs:
       - name: Lint commit message
         run: npx commitlint --from=HEAD~1
 
+      - name: Generate Swagger types
+        run: npm run swagger-to-types
+
       - name: Lint codebase
         run: npm run lint
 
