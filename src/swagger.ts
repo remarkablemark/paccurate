@@ -18,7 +18,9 @@ export interface paths {
         200: {
           schema: {
             /** @description List of boxes, packed, with their contained items. */
-            boxes?: definitions['Box'][]
+            boxes?: {
+              box?: definitions['Box']
+            }[]
             /** @description title of packing result, when applicable. */
             title?: string
             /** @description build timestamp of engine. */
@@ -33,6 +35,16 @@ export interface paths {
             lenLeftovers?: number
             /** @description total estimated cost of all packed boxes, when applicable, in cents. */
             totalCost?: number
+            /** @description total volume of all boxes returned */
+            totalVolume?: number
+            /** @description total net (item) volume of all packed (non-leftover) items */
+            totalVolumeNet?: number
+            /** @description total net volume plus reserved volume from "reservedSpace" */
+            totalVolumeUsed?: number
+            /** @description totalVolumeUsed divided by totalVolume */
+            totalVolumeUtilization?: number
+            /** @description total gross weight of all packed boxes, including box tare weights and item weights. */
+            totalWeight?: number
             /** @description seconds spent in packing */
             packTime?: number
             /** @description seconds spent in rendering and placement instruction creation of packing solution */
@@ -50,7 +62,7 @@ export interface paths {
             /** @description additional styles for pack images */
             styles?: string
             /** @description all box SVG images */
-            svgs?: string
+            svgs?: string[]
             /** @description a client-provided string identifier for the order this pack corresponds to. */
             orderId?: string
             /** @description a client-provided string identifier for the pack request being made. */
@@ -87,6 +99,7 @@ export interface paths {
 export interface definitions {
   Error: {
     message: string
+    details?: string
     code: number
   }
   Pack: {
@@ -96,9 +109,15 @@ export interface definitions {
     requestId?: string
     /** @description a client-provided string identifier for the order this pack corresponds to. */
     orderId?: string
-    /** @description aligns all items laying flat. If possible, it may create a "brick-laying" pattern to increase stability. */
+    /**
+     * @description aligns all items laying flat. If possible, it may create a "brick-laying" pattern to increase stability.
+     * @default false
+     */
     layFlat?: boolean
-    /** @description alternates layFlat orientation by layer, so as to create an interlocked placement pattern and improve item stability. */
+    /**
+     * @description alternates layFlat orientation by layer, so as to create an interlocked placement pattern and improve item stability.
+     * @default false
+     */
     interlock?: boolean
     /**
      * @description only pack items at valid corner points of other items (optimal)
@@ -107,7 +126,30 @@ export interface definitions {
     corners?: boolean
     /**
      * @description item set definitions if not creating random items.
-     * @example [object Object],[object Object]
+     * @example [
+     *   {
+     *     "refId": 0,
+     *     "color": "tomato",
+     *     "dimensions": {
+     *       "x": 4.2,
+     *       "y": 7,
+     *       "z": 8
+     *     },
+     *     "weight": 4.5,
+     *     "quantity": 10
+     *   },
+     *   {
+     *     "refId": 1,
+     *     "color": "cornflowerblue",
+     *     "dimensions": {
+     *       "x": 3,
+     *       "y": 3,
+     *       "z": 5
+     *     },
+     *     "weight": 2,
+     *     "quantity": 13
+     *   }
+     * ]
      */
     itemSets?: definitions['ItemSet'][]
     /** @description box type definitions for packing, will override boxTypeSets defined. */
@@ -116,12 +158,17 @@ export interface definitions {
     boxTypeGenerators?: definitions['BoxTypeGenerator'][]
     /**
      * @description default attributes for all "boxTypes", to be overridden by any individual "boxType" attributes specified.
-     * @example [object Object]
+     * @example {
+     *   "weightMax": 50,
+     *   "rateTable": {
+     *     "dimFactor": 166
+     *   }
+     * }
      */
     boxTypeDefaults?: definitions['BoxProperties']
     /**
      * @description pre-packed boxes, including any items specified that will be packed and excess space used before any new boxes are created.
-     * @example
+     * @example []
      */
     boxes?: definitions['Box'][]
     /**
@@ -132,32 +179,47 @@ export interface definitions {
     usableSpace?: number
     /**
      * @description space in boxes that is reserved, i.e., for packing material.
+     * @default 0
      * @example 0.2
      */
     reservedSpace?: number
     /**
      * @description predefined box types to be used, separated by commas. Will be overridden by boxTypes. Acceptable values are <ul><li>"fedex"--FedEx OneRate</li><li>"usps"--USPS Priority Flat Rate</li><li>"pallet"--full-, half-, and quarter-sized 48"x40" pallets.
-     * @example
+     * @example []
      */
     boxTypeSets?: definitions['BoxTypeSet'][]
     /**
      * @description The x,y,z coordinates of the virtual eye looking at the package for visualization purposes. Default is isometric, "1,1,1". To generate a side view, one could use "0.001,1.0,0.001".
-     * @example [object Object]
+     * @example {
+     *   "x": 1,
+     *   "y": 1,
+     *   "z": 1
+     * }
      */
     eye?: definitions['Point']
     /**
      * @description the x,y,z coordinates of an optional packing origin. A packing origin is used to create more balanced packing for situations where load needs to be considered. E.g., for a 40"x48" pallet, a packOrigin representing the middle of the pallet, "0,20,24", would cause placement to minimize the distance of the packed items from the center of the pallet.
-     * @example [object Object]
+     * @example {
+     *   "x": 0,
+     *   "y": 0,
+     *   "z": 0
+     * }
      */
     packOrigin?: definitions['Point']
-    /** @description <b>[experimental]</b> the shipping zone in order to use basic zone-based price optimization. */
+    /**
+     * @description <b>[deprecated]</b> the shipping zone in order to use basic zone-based price optimization.
+     * @example null
+     */
     zone?: number
     /**
      * @description Array of packing rules.
-     * @example
+     * @example []
      */
     rules?: definitions['Rule'][]
-    /** @description create random items */
+    /**
+     * @description create random items
+     * @default false
+     */
     random?: boolean
     /**
      * @description number of random items to generate and the quantity of each if "random" is set to true. a value of 5 would create 5 different items with a quantity of 5 each, making the total item quantity equal to n&sup2;
@@ -179,6 +241,7 @@ export interface definitions {
     /**
      * @description if random is selected, seed the random number generator to deterministically generate random items to pack.
      * @default true
+     * @example false
      */
     seed?: boolean
     /**
@@ -193,12 +256,14 @@ export interface definitions {
     imgSize?: number
     /**
      * @description template name for markup generation.
+     * @example
      * @enum {string}
      */
     template?: 'demo.tmpl' | 'shipapp.tmpl' | 'boat.tmpl'
     /**
      * @description include inline javascripts and styles for base template
      * @default true
+     * @example false
      */
     includeScripts?: boolean
     /**
@@ -216,10 +281,17 @@ export interface definitions {
     /**
      * @description If placementStyle is set to "default", coordOrder sets the placement priority of axes ascendingly. "0,1,2" would search for placement points along the Z(length,"2"), then Y(width,"1"), and finally X(height"0"). Keep in mind that in the default rendering the "up" direction is X and the other axes follow the right-hand rule.
      * This is useful for different packing methods. E.g., Utilizing "2,0,1" would pack a shipping container first in the Y(width) direction, then in the X(height) direction, and finally in the Z(length) direction, replication a floor-to-ceiling, front-to-back loading method.
-     * @example 0,1,2
+     * @example [
+     *   0,
+     *   1,
+     *   2
+     * ]
      */
     coordOrder?: number[]
-    /** @description if selected, will ensure that all like items will be packed together, in no more than [cohortMax] different groups within a single container. */
+    /**
+     * @description if selected, will ensure that all like items will be packed together, in no more than [cohortMax] different groups within a single container.
+     * @default false
+     */
     cohortPacking?: boolean
     /**
      * @description the maximum number of contiguous cohorts for a given item type within a single container. E.g., if you pack 40 chairs in a single container, a cohortMax of 2 could yield one (all 40 chairs in a single block if space is availabe) or two (say, 25 chairs in one corner and 15 in the other) contiguous cohorts.
@@ -252,9 +324,15 @@ export interface definitions {
       | 'largest-cross-section'
       | 'set-volume'
       | 'combined'
-    /** @description Whether or not to reverse the itemSort utilized. */
+    /**
+     * @description Whether or not to reverse the itemSort utilized.
+     * @default false
+     */
     itemSortReverse?: boolean
-    /** @description For all items where orientation flipping is used, the orientation producing the highest multiple of items fit per remaining dimension is used as the first orientation. This option should be enabled when packing high quantities of single item types, but may produce inconsistent results in other cases. Defers to item orientation locking and itemOrientationSearchDepth > 0 if a superior result is found. */
+    /**
+     * @description For all items where orientation flipping is used, the orientation producing the highest multiple of items fit per remaining dimension is used as the first orientation. This option should be enabled when packing high quantities of single item types, but may produce inconsistent results in other cases. Defers to item orientation locking and itemOrientationSearchDepth > 0 if a superior result is found.
+     * @default false
+     */
     itemInitialOrientationBestForBox?: boolean
     /**
      * @description Whether to attempt packing by either greedily placing items or placing all allowable combinations of initial item orientations and selecting the most performant. When true, items will be placed immediately using the orientation reflected by their dimensions definition and will only be flipped if a placement cannot be found and the item rules allow orientation changes. When false, all allowable initial orientation combinations will be attempted for each item in each box.
@@ -266,9 +344,15 @@ export interface definitions {
      * @default 1
      */
     itemOrientationSearchDepth?: number
-    /** @description Whether or not the items should be initially sorted by their sequence value instead of by the specified itemSort. This is not always useful, as the default "biggest-first" volume sort is very effective for items, and constraining by maxSequenceDistance is applied regardless of this field. That said, for doing custom pre-sorts such as weight-based instead of volume based, this value should be set to true. */
+    /**
+     * @description Whether or not the items should be initially sorted by their sequence value instead of by the specified itemSort. This is not always useful, as the default "biggest-first" volume sort is very effective for items, and constraining by maxSequenceDistance is applied regardless of this field. That said, for doing custom pre-sorts such as weight-based instead of volume based, this value should be set to true.
+     * @default false
+     */
     sequenceSort?: boolean
-    /** @description Colorize items solely by their sequence value, light when sequence is high, dark when it is low. Useful for indicating item bin location, weight, or other sequence property that may not be apparent from the default visualization. */
+    /**
+     * @description Colorize items solely by their sequence value, light when sequence is high, dark when it is low. Useful for indicating item bin location, weight, or other sequence property that may not be apparent from the default visualization.
+     * @default false
+     */
     sequenceHeatMap?: boolean
     /** @description This is the maximum distance allowable between two sequence values of items packed in a common box. E.g., "Distance" for an item sequence composed of aisle/bin combinations of "0401" and "1228" has a sequence distance of \|1228 - 401\| = 827 */
     maxSequenceDistance?: number
@@ -278,28 +362,60 @@ export interface definitions {
      * @enum {string}
      */
     boxTypeChoiceStyle?: 'actual' | 'estimated'
-    /** @description <p>When selecting the next available boxType, we must consider how far to look ahead.</p><p>Consider we have 8 items of identical dimensions, and two flat rate boxTypes. It is found that Box A can fit 6 items, and costs $12. Box B can fit 4 items, and costs $10.</p><p>If we consider only the next box, i.e., 'boxTypeChoiceLookahead' set to 0, we would select Box A. It costs $2 per item, whereas Box B is $2.50 per item. Box A is opened, 6 items are placed inside, and now 2 remain. To pack the last 2, Box B would be selected, as 2 items for $10 is $5 per item, and Box A's $12 is $6 per item.</p><p>Alternatively, if 'boxTypeChoiceLookahead' is set to 1, the boxType that provides the lowest cost per item <i>including</i> the lookahead boxType(s) would be selected. In this case, we find we need 2 of Box B, for $20 total, to fit all 8 items, or $2.50 per item, and would need 1 of Box A and 1 of Box B if Box A is selected first, for $22 total or $2.75 per item. Box B would be used.</p><p>Please note that 'boxTypeChoiceLookahead', especially when combined with the 'actual' 'boxTypeChoiceStyle' can have significant performance impacts. 0 is recommended for real-time use cases.</p> */
+    /**
+     * @description <p>When selecting the next available boxType, we must consider how far to look ahead.</p><p>Consider we have 8 items of identical dimensions, and two flat rate boxTypes. It is found that Box A can fit 6 items, and costs $12. Box B can fit 4 items, and costs $10.</p><p>If we consider only the next box, i.e., 'boxTypeChoiceLookahead' set to 0, we would select Box A. It costs $2 per item, whereas Box B is $2.50 per item. Box A is opened, 6 items are placed inside, and now 2 remain. To pack the last 2, Box B would be selected, as 2 items for $10 is $5 per item, and Box A's $12 is $6 per item.</p><p>Alternatively, if 'boxTypeChoiceLookahead' is set to 1, the boxType that provides the lowest cost per item <i>including</i> the lookahead boxType(s) would be selected. In this case, we find we need 2 of Box B, for $20 total, to fit all 8 items, or $2.50 per item, and would need 1 of Box A and 1 of Box B if Box A is selected first, for $22 total or $2.75 per item. Box B would be used.</p><p>Please note that 'boxTypeChoiceLookahead', especially when combined with the 'actual' 'boxTypeChoiceStyle' can have significant performance impacts. 0 is recommended for real-time use cases.</p>
+     * @default 0
+     */
     boxTypeChoiceLookahead?: number
+    /**
+     * @description Control the ability for partially-filled boxes to allow packing of later-sorted items. A value of null or -1 means unlimited lookback is permitted, i.e., every box can be used to pack any allowable item that fits regardless of its pack sequence, and all boxes will remain "opened" or available for packing until the last item in the pack sequence is attempted. A value of 0 means lookback is not allowed, and as soon as the next item in the pack sequence does not fit into a partially filled box, that box is "closed" or locked and will not permit any additional items (i.e., out-of-sequence items) to be packed in it.
+     * @default -1
+     */
+    boxTypeChoiceLookback?: number
     /**
      * @description The objective to evaluate boxTypeChoices by. 'lowest-cost' minimizes price or volume cost of boxTypes selected, 'most-items' maximizes item count per box opened, i.e., fewest total boxes used.
      * @default lowest-cost
      * @enum {string}
      */
     boxTypeChoiceGoal?: 'lowest-cost' | 'most-items'
-    /** @description The maximum number of boxes to be used to pack the items in the request, potentially leaving items in 'leftovers' if there is insufficient space, determined by item 'sequence' or selected 'itemSort'. If existing 'boxes' are passed to the pack request, they count towards this total, but will not be excluded, allowing for situations where 'lenBoxes' may be greater than 'boxesMax'. However, no 'boxTypes' will be used to create additional boxes unless doing so would not exceed 'boxesMax'. */
+    /**
+     * @description The maximum number of boxes to be used to pack the items in the request, potentially leaving items in 'leftovers' if there is insufficient space, determined by item 'sequence' or selected 'itemSort'. If existing 'boxes' are passed to the pack request, they count towards this total, but will not be excluded, allowing for situations where 'lenBoxes' may be greater than 'boxesMax'. However, no 'boxTypes' will be used to create additional boxes unless doing so would not exceed 'boxesMax'.
+     * @default 0
+     */
     boxesMax?: number
-    /** @description The maximum number of boxes that a single ItemSet's member items (i.e., all that share the same refId) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit. */
+    /**
+     * @description The maximum number of boxes that a single ItemSet's member items (i.e., all that share the same refId) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit.
+     * @default 0
+     */
     boxesPerItemSetMax?: number
-    /** @description The maximum number of boxes that a single non-empty sequence's member items (i.e., all that share the same non-empty sequence) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit. */
+    /**
+     * @description The maximum number of boxes that a single non-empty sequence's member items (i.e., all that share the same non-empty sequence) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit.
+     * @default 0
+     */
     boxesPerSequenceMax?: number
-    /** @description The maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings. */
+    /**
+     * @description The maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
+     * @default 0
+     */
     itemsPerBoxMax?: number
     /**
+     * @description The maximum quantity of unique 'item.refId' values that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
+     * @default 0
+     */
+    itemSetsPerBoxMax?: number
+    /**
      * @description Limit the item count that can share a placement on a specific line parallel to the placement axis, e.g., '[1,2,1]' means items can be placed 1 high, 2 wide, and 1 deep within the box. A value of '0' is equivalent to no limit along that axis. Overridden by 'boxType' settings.
-     * @example 1,2,1
+     * @example [
+     *   1,
+     *   2,
+     *   1
+     * ]
      */
     itemsInlineMax?: number[]
-    /** @description The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit. */
+    /**
+     * @description The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit.
+     * @default 0
+     */
     generatedBoxTypesMax?: number
     /**
      * @description The tiebreaker to use in the event to box type choices are otherwise completely equal. Default is "volume", alternative is "weight".
@@ -307,6 +423,11 @@ export interface definitions {
      * @enum {string}
      */
     valueTiebreaker?: 'volume' | 'weight'
+    /**
+     * @description Optional timeout for request computation, will be reduced to endpoint maximum if in excess of published timeout.
+     * @example 30
+     */
+    timeout?: number
   }
   BoxProperties: {
     /** @description name for the type of box. */
@@ -315,7 +436,10 @@ export interface definitions {
     refId?: number
     /** @description Fixed price of the container, in whole units of currency, default USD cents. This can represent the cost of a flat rate carton, the cost of the actual carton materials, or it can include any other flat fees that may need to be added on a <i>per-carton</i> basis, such as handling, accessorial surchages, oversize fees, etc. This value is <i>added</i> to any rate table rates defined for the carton. */
     price?: number
-    /** @description weight of the container when empty or otherwise unladen, i.e., of the box itself. */
+    /**
+     * @description weight of the container when empty or otherwise unladen, i.e., of the box itself.
+     * @default 0
+     */
     weightTare?: number
     /** @description maximum allowable gross weight for the box, i.e., all packed item weights plus the weightTare. */
     weightMax: number
@@ -325,14 +449,27 @@ export interface definitions {
     centerOfMass?: definitions['Point']
     /**
      * @description space in boxes that is reserved, i.e., for packing material, overriding top-level 'reservedSpace'.
+     * @default 0
      * @example 0.2
      */
     reservedSpace?: number
-    /** @description maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, overriding top-level 'itemsPerBoxMax'. */
+    /**
+     * @description The maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, overriding top-level 'itemsPerBoxMax'.
+     * @default 0
+     */
     itemsPerBoxMax?: number
     /**
+     * @description The maximum quantity of unique 'item.refId' values that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, overriding top-level 'itemSetsPerBoxMax' settings.
+     * @default 0
+     */
+    itemSetsPerBoxMax?: number
+    /**
      * @description Limit the item count that can share a placement on a specific line parallel to the placement axis, e.g., '[1,2,1]' means items can be placed 1 high, 2 wide, and 1 deep within the box. A value of '0' is equivalent to no limit along that axis.
-     * @example 1,2,1
+     * @example [
+     *   1,
+     *   2,
+     *   1
+     * ]
      */
     itemsInlineMax?: number[]
     /** @description An optional rate table definition for improved carton selection and pricing optimization. Defaults are included using retail rates for FedEx and UPS if carrier and service is provided, but optimization can be improved with more data passed in a carton's specific rate table. Methods are <ol><li>Provide carrier, service, and zone.</li><li>Provide all acceptable weights and prices to use for the carton, similar to actual carrier rate tables.</li><li>Provide the coefficients required for a simple linear weight-dependent pricing model.</li></ol> */
@@ -340,7 +477,17 @@ export interface definitions {
   }
   /**
    * @description box types to be used for packing.
-   * @example [object Object]
+   * @example {
+   *   "name": "Example Box",
+   *   "dimensions": {
+   *     "x": 7.5,
+   *     "y": 12,
+   *     "z": 16
+   *   },
+   *   "weightMax": 60,
+   *   "weightTare": 0.5,
+   *   "price": 125
+   * }
    */
   BoxType: definitions['BoxProperties']
   /**
@@ -374,6 +521,8 @@ export interface definitions {
       limits?: definitions['GeneratorLimit'][]
       /** @description list of GeneratorPriceComponents defining the dynamic price behaviors of generated box sizes. */
       priceComponents?: definitions['GeneratorPriceComponent'][]
+      /** @description if unset or false, the generator will reduce its dimensions to the maximum of the max extent of items placed within it or the minimum specified limit along each axis containint a GeneratorAxisRange object; if true, the generator will not reduce its dimensions along any axis; trimming to max extent is ignored on all axes with only GeneratorAxisList objects, as to respect specified box footprints. By default, rounds up trimmed dimensions to the nearest tenths unit of length. */
+      noTrimToMaxExtent?: unknown
     }
   }
   /** @description enumerated list of possible lengths for given axis. */
@@ -384,9 +533,15 @@ export interface definitions {
     min?: number
     /** @description the maximum possible axis length to generate */
     max?: number
-    /** @description if true, intelligently select possible axis lengths based upon item dimensions. */
+    /**
+     * @description if true, intelligently select possible axis lengths based upon item dimensions.
+     * @default false
+     */
     deriveFromItems?: boolean
-    /** @description if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and step. */
+    /**
+     * @description if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and step.
+     * @default false
+     */
     fitForFirstItem?: boolean
     /**
      * @description if deriveFromItems is not true, the number of increments to divide the range between min and max into, otherwise ignored.
@@ -430,7 +585,9 @@ export interface definitions {
     subspace?: definitions['Subspace']
     boxType?: definitions['BoxType']
     /** items */
-    items?: definitions['Item'][]
+    items?: {
+      item?: definitions['Item']
+    }[]
     /** @description total volume of the box. */
     volumeMax?: number
     /** @description utilized volume of the box, i.e., item volume plus reserved volume. */
@@ -455,6 +612,8 @@ export interface definitions {
     dimensionalWeight?: number
     /** @description whether or not dimensional weight was used for this box. */
     dimensionalWeightUsed?: boolean
+    /** @description cardinality of all non-virtual items packed in this box and in any dependent subspaces it contains */
+    lenItems?: number
     /** @description raw svg of visualization. */
     svg?: string
     /** @description string representation of box center of mass. */
@@ -480,7 +639,10 @@ export interface definitions {
     dimensions: definitions['Point']
     /** @description the coordinates of the center of mass of the item. */
     centerOfMass?: definitions['Point']
-    /** @description whether or not this is a real item or a virtual, blocking space (from a subspace or loading rules) */
+    /**
+     * @description whether or not this is a real item or a virtual, blocking space (from a subspace or loading rules)
+     * @default false
+     */
     virtual?: boolean
   }
   /** @description a specific, packed item. */
@@ -519,8 +681,13 @@ export interface definitions {
     property?: 'sequence' | 'name'
     /** @description the query string to search the specified itemSet property for. */
     expression?: string
-    /** @description if true, negate substring search so rule applies only to itemSet properties not matching expression. */
-    negation?: boolean
+    /** @description query strings to search the specified itemSet property for. */
+    expressions?: string[]
+    /**
+     * @description if true, negate substring search so rule applies only to itemSet properties not matching expression.
+     * @default false
+     */
+    negate?: boolean
   }
   /** @description Rule definition for packing constraints. */
   Rule: {
@@ -663,38 +830,8 @@ export interface definitions {
      *   </li>
      *   <li>
      *     <h3>irregular</h3>
-     *     <p>There are two types of irregular item packings right now, "nesting" and "roll".</p>
+     *     <p>There is one type of irregular item packing right now, "roll".</p>
      *     <ul>
-     *       <li>
-     *         <h4>"nesting"</h4>
-     *         <p>"nesting" is where the first item has full dimensions, and subsequent items have diminished dimensions. E.g.,
-     *         a flower pot may have dimensions of 6" x 6" x 6", but additional flower pots can nest in the first pot, and have
-     *         effective dimensions of 1" x 6" x 6". These cases are almost always have a single direction that nesting can occur
-     *         in--two pots must both be right-side up and one on top of the other if they are to nest--so the rule options must
-     *         reflect these restrictions.<p/>
-     *         <p><b>"options"</b> contents:</p>
-     *         <table>
-     *           <tr><th>key</th><th>value</th><th>description</th></tr>
-     *           <tr><td>type</td><td>"nesting"</td></tr>
-     *           <tr><td>additionalDimensionsX</td><td><i>number</i></td></tr>
-     *           <tr><td>additionalDimensionsY</td><td><i>number</i></td></tr>
-     *           <tr><td>additionalDimensionsZ</td><td><i>number</i></td></tr>
-     *           <tr><td>nestingOrientation</td><td>0, 1, or 2</td><td>axis index of direction of stacking (0 for vertical/X/"dinner plates", 1 for shorter-horizontal/Y/"shopping carts", 2 for long-horizontal/Z/"newsstand magazines")</td></tr>
-     *           <tr><td>nestingLimit</td><td><i>integer</i></td><td>total number of nested items allowed in a single "stack"</td></tr>
-     *         </table>
-     *         <pre>{
-     *   "operation": "irregular",
-     *   "itemRefId": 0,
-     *   "options": {
-     *     "type": "nesting",
-     *     "additionalDimensionsX": 1.0,
-     *     "additionalDimensionsY": 6.0,
-     *     "additionalDimensionsZ": 6.0,
-     *     "nestingOrientation": 0,
-     *     "nestingLimit": 5
-     *   }
-     * }</pre>
-     *       </li>
      *       <li>
      *         <h4>"roll"</h4>
      *         <p>A rolled irregular item is simply where the item dimensions X, Y, and Z, represent the thickness, width, and total
@@ -819,11 +956,20 @@ export interface definitions {
    * @description vector definition used for points, dimensions, and other spacial purposes.
    */
   Point: {
-    /** @description x coordinate, used as height. */
+    /**
+     * @description x coordinate, used as height.
+     * @default 0
+     */
     x?: number
-    /** @description y coordinate, used as width. */
+    /**
+     * @description y coordinate, used as width.
+     * @default 0
+     */
     y?: number
-    /** @description z coordinate, used as length. */
+    /**
+     * @description z coordinate, used as length.
+     * @default 0
+     */
     z?: number
   }
   /** RateTable */

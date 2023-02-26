@@ -6,7 +6,7 @@
 [![build](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/remarkablemark/paccurate/branch/master/graph/badge.svg?token=LQAQTQE0QI)](https://codecov.io/gh/remarkablemark/paccurate)
 
-Node.js client library for [Paccurate](https://paccurate.io/) (see [demo](https://replit.com/@remarkablemark/paccurate)). The types are generated from [Paccurate Swagger v1.5.4](https://api.paccurate.io/static/api/1.5.4/swagger.yaml).
+Node.js client library for [Paccurate](https://paccurate.io/) (see [demo](https://replit.com/@remarkablemark/paccurate)). The types are generated from [Paccurate Swagger v1.5.7](https://api.paccurate.io/static/api/1.5.7/swagger.yaml).
 
 ## Quick Start
 
