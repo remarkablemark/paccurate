@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.5.4
+  version: 1.5.7
   title: paccurate.io
 paths:
   /:
@@ -28,7 +28,10 @@ paths:
                 description: List of boxes, packed, with their contained items.
                 type: array
                 items:
-                  $ref: '#/definitions/Box'
+                  type: object
+                  properties:
+                    box:
+                      $ref: '#/definitions/Box'
               title:
                 description: title of packing result, when applicable.
                 type: string
@@ -50,6 +53,21 @@ paths:
               totalCost:
                 description: total estimated cost of all packed boxes, when applicable, in cents.
                 type: integer
+              totalVolume:
+                description: total volume of all boxes returned
+                type: number
+              totalVolumeNet:
+                description: total net (item) volume of all packed (non-leftover) items
+                type: number
+              totalVolumeUsed:
+                description: total net volume plus reserved volume from "reservedSpace"
+                type: number
+              totalVolumeUtilization:
+                description: totalVolumeUsed divided by totalVolume
+                type: number
+              totalWeight:
+                description: total gross weight of all packed boxes, including box tare weights and item weights.
+                type: number
               packTime:
                 description: seconds spent in packing
                 type: number
@@ -78,7 +96,9 @@ paths:
                 type: string
               svgs:
                 description: all box SVG images
-                type: string
+                type: array
+                items:
+                  type: string
               orderId:
                 description: a client-provided string identifier for the order this pack corresponds to.
                 type: string
@@ -95,6 +115,7 @@ paths:
                 type: string
               warnings:
                 description: any warning messages about non-critical issues arising during the pack.
+                required: false
                 type: array
                 items:
                   type: string
@@ -122,6 +143,8 @@ definitions:
       - code
     properties:
       message:
+        type: string
+      details:
         type: string
       code:
         type: integer
@@ -234,7 +257,7 @@ definitions:
           y: 0
           z: 0
       zone:
-        description: <b>[experimental]</b> the shipping zone in order to use basic zone-based price optimization.
+        description: <b>[deprecated]</b> the shipping zone in order to use basic zone-based price optimization.
         type: integer
         example: null
         minimum: 1
@@ -388,6 +411,10 @@ definitions:
         description: <p>When selecting the next available boxType, we must consider how far to look ahead.</p><p>Consider we have 8 items of identical dimensions, and two flat rate boxTypes. It is found that Box A can fit 6 items, and costs $12. Box B can fit 4 items, and costs $10.</p><p>If we consider only the next box, i.e., 'boxTypeChoiceLookahead' set to 0, we would select Box A. It costs $2 per item, whereas Box B is $2.50 per item. Box A is opened, 6 items are placed inside, and now 2 remain. To pack the last 2, Box B would be selected, as 2 items for $10 is $5 per item, and Box A's $12 is $6 per item.</p><p>Alternatively, if 'boxTypeChoiceLookahead' is set to 1, the boxType that provides the lowest cost per item <i>including</i> the lookahead boxType(s) would be selected. In this case, we find we need 2 of Box B, for $20 total, to fit all 8 items, or $2.50 per item, and would need 1 of Box A and 1 of Box B if Box A is selected first, for $22 total or $2.75 per item. Box B would be used.</p><p>Please note that 'boxTypeChoiceLookahead', especially when combined with the 'actual' 'boxTypeChoiceStyle' can have significant performance impacts. 0 is recommended for real-time use cases.</p>
         type: integer
         default: 0
+      boxTypeChoiceLookback:
+        description: Control the ability for partially-filled boxes to allow packing of later-sorted items. A value of null or -1 means unlimited lookback is permitted, i.e., every box can be used to pack any allowable item that fits regardless of its pack sequence, and all boxes will remain "opened" or available for packing until the last item in the pack sequence is attempted. A value of 0 means lookback is not allowed, and as soon as the next item in the pack sequence does not fit into a partially filled box, that box is "closed" or locked and will not permit any additional items (i.e., out-of-sequence items) to be packed in it.
+        type: integer
+        default: -1
       boxTypeChoiceGoal:
         description: The objective to evaluate boxTypeChoices by. 'lowest-cost' minimizes price or volume cost of boxTypes selected, 'most-items' maximizes item count per box opened, i.e., fewest total boxes used.
         type: string
@@ -411,6 +438,10 @@ definitions:
         description: The maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
         type: integer
         default: 0
+      itemSetsPerBoxMax:
+        description: The maximum quantity of unique 'item.refId' values that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
+        type: integer
+        default: 0
       itemsInlineMax:
         description: Limit the item count that can share a placement on a specific line parallel to the placement axis, e.g., '[1,2,1]' means items can be placed 1 high, 2 wide, and 1 deep within the box. A value of '0' is equivalent to no limit along that axis. Overridden by 'boxType' settings.
         type: array
@@ -430,6 +461,10 @@ definitions:
         enum:
           - volume
           - weight
+      timeout:
+        description: Optional timeout for request computation, will be reduced to endpoint maximum if in excess of published timeout.
+        type: number
+        example: 30
   BoxProperties:
     type: object
     properties:
@@ -468,7 +503,11 @@ definitions:
         example: 0.2
         type: number
       itemsPerBoxMax:
-        description: maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, overriding top-level 'itemsPerBoxMax'.
+        description: The maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, overriding top-level 'itemsPerBoxMax'.
+        type: integer
+        default: 0
+      itemSetsPerBoxMax:
+        description: The maximum quantity of unique 'item.refId' values that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, overriding top-level 'itemSetsPerBoxMax' settings.
         type: integer
         default: 0
       itemsInlineMax:
@@ -518,6 +557,7 @@ definitions:
       operation:
         type: string
         description: Type of generator to use. "cartesian" requires axis list and range "options" fields in order to discover acceptable carton sizes, whereas "pack-as-is" generates a box for each item (optionally selected by an itemMatch "exclude" rule to capture only items able to be shipped as is) and includes default or custom rate and pricing information on the as-is packaging to adequately weight the decision between overboxing (potentially with other items) or shipping alone. Compare with the "pack-as-is" rule, which will strictly pass through an item as an output box, and will not evaluate whether to overbox. E.g., a "price" of -1 can be set in the "boxTypeDefaults" object for a "pack-as-is" generator in order to incentivize a pack-as-is versus an overbox the smallest meaningful amount.
+        required: true
         enum:
           - cartesian
           - pack-as-is
@@ -558,6 +598,8 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/GeneratorPriceComponent'
+          noTrimToMaxExtent:
+            description: if unset or false, the generator will reduce its dimensions to the maximum of the max extent of items placed within it or the minimum specified limit along each axis containint a GeneratorAxisRange object; if true, the generator will not reduce its dimensions along any axis; trimming to max extent is ignored on all axes with only GeneratorAxisList objects, as to respect specified box footprints. By default, rounds up trimmed dimensions to the nearest tenths unit of length.
   GeneratorAxisList:
     description: enumerated list of possible lengths for given axis.
     type: array
@@ -603,6 +645,7 @@ definitions:
     properties:
       key:
         type: string
+        required: true
         description: key for a given price component, allowing for multiple metrics to calculate the same value, in which case the maximum price will be selected.
       metric:
         $ref: '#/definitions/Metric'
@@ -645,7 +688,10 @@ definitions:
             title: items
             type: array
             items:
-              $ref: '#/definitions/Item'
+              type: object
+              properties:
+                item:
+                  $ref: '#/definitions/Item'
           volumeMax:
             type: number
             description: total volume of the box.
@@ -694,6 +740,9 @@ definitions:
           dimensionalWeightUsed:
             type: boolean
             description: whether or not dimensional weight was used for this box.
+          lenItems:
+            description: cardinality of all non-virtual items packed in this box and in any dependent subspaces it contains
+            type: integer
           svg:
             type: string
             description: raw svg of visualization.
@@ -766,6 +815,7 @@ definitions:
             description: a combination of the item's refId and its packing sequence, uniquely identifying it.
           groupPackParent:
             type: string
+            required: false
             description: if specified, the uniqueId of the group-pack parent item this item belongs to.
   ItemSet:
     description: set of items sharing a common type.
@@ -795,7 +845,12 @@ definitions:
       expression:
         description: the query string to search the specified itemSet property for.
         type: string
-      negation:
+      expressions:
+        description: query strings to search the specified itemSet property for.
+        type: array
+        items:
+          type: string
+      negate:
         description: if true, negate substring search so rule applies only to itemSet properties not matching expression.
         type: boolean
         default: false
@@ -967,38 +1022,8 @@ definitions:
             </li>
             <li>
               <h3>irregular</h3>
-              <p>There are two types of irregular item packings right now, "nesting" and "roll".</p>
+              <p>There is one type of irregular item packing right now, "roll".</p>
               <ul>
-                <li>
-                  <h4>"nesting"</h4> 
-                  <p>"nesting" is where the first item has full dimensions, and subsequent items have diminished dimensions. E.g.,
-                  a flower pot may have dimensions of 6" x 6" x 6", but additional flower pots can nest in the first pot, and have
-                  effective dimensions of 1" x 6" x 6". These cases are almost always have a single direction that nesting can occur
-                  in--two pots must both be right-side up and one on top of the other if they are to nest--so the rule options must
-                  reflect these restrictions.<p/>
-                  <p><b>"options"</b> contents:</p>
-                  <table>
-                    <tr><th>key</th><th>value</th><th>description</th></tr>
-                    <tr><td>type</td><td>"nesting"</td></tr>
-                    <tr><td>additionalDimensionsX</td><td><i>number</i></td></tr>
-                    <tr><td>additionalDimensionsY</td><td><i>number</i></td></tr>
-                    <tr><td>additionalDimensionsZ</td><td><i>number</i></td></tr>
-                    <tr><td>nestingOrientation</td><td>0, 1, or 2</td><td>axis index of direction of stacking (0 for vertical/X/"dinner plates", 1 for shorter-horizontal/Y/"shopping carts", 2 for long-horizontal/Z/"newsstand magazines")</td></tr>
-                    <tr><td>nestingLimit</td><td><i>integer</i></td><td>total number of nested items allowed in a single "stack"</td></tr>
-                  </table>
-                  <pre>{
-            "operation": "irregular",
-            "itemRefId": 0,
-            "options": {
-              "type": "nesting",
-              "additionalDimensionsX": 1.0,
-              "additionalDimensionsY": 6.0,
-              "additionalDimensionsZ": 6.0,
-              "nestingOrientation": 0,
-              "nestingLimit": 5
-            }
-          }</pre>
-                </li>
                 <li>
                   <h4>"roll"</h4> 
                   <p>A rolled irregular item is simply where the item dimensions X, Y, and Z, represent the thickness, width, and total
