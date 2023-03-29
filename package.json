@@ -33,7 +33,7 @@
     "api"
   ],
   "dependencies": {
-    "@types/node-fetch": "2.6.2",
+    "@types/node-fetch": "2.6.3",
     "node-fetch": "2.6.9"
   },
   "devDependencies": {
