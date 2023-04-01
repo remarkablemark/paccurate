@@ -135,9 +135,9 @@ The following types can be imported:
 import type { Body, Response } from 'paccurate'
 ```
 
-## Release
+## Contributing
 
-Release is automated with [Release Please](https://github.com/googleapis/release-please).
+We encourage contributions! Check out the [contributing guide](https://github.com/remarkablemark/paccurate/blob/master/.github/CONTRIBUTING.md) on how to proceed.
 
 ## License
 
