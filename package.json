@@ -15,8 +15,8 @@
     "prepublishOnly": "pinst --disable && npm run lint && npm run lint:tsc && npm run test:ci && npm run clean && npm run build",
     "swagger-to-types": "openapi-typescript src/swagger.yaml --output src/swagger.ts --prettier-config .prettierrc.json",
     "test": "jest",
-    "test:ci": "CI=true npm test -- --ci --colors --coverage",
-    "test:watch": "npm test -- --watch"
+    "test:ci": "CI=true jest --ci --colors --coverage",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
