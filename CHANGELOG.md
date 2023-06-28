@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/remarkablemark/paccurate/compare/v1.3.0...v1.4.0) (2023-06-28)
+
+
+### Features
+
+* **module:** add ECMAScript modules (ESM) support ([6ad8f40](https://github.com/remarkablemark/paccurate/commit/6ad8f40ce8b7272781c36ee150f88295e74ba3ac))
+
 ## [1.3.0](https://github.com/remarkablemark/paccurate/compare/v1.2.0...v1.3.0) (2023-02-26)
 
 
