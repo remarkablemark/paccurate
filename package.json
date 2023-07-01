@@ -1,6 +1,6 @@
 {
   "name": "paccurate",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Reduce fulfillment costs and wasted material by finding the optimal way to pack every shipment, in real time.",
   "author": "Mark <mark@remarkablemark.org>",
   "main": "lib/index.js",
