@@ -4,7 +4,10 @@ import fetch from 'node-fetch'
 import type { Body, Response } from './types'
 
 class ResponseError extends Error {
-  constructor(public code: number, message: string) {
+  constructor(
+    public code: number,
+    message: string,
+  ) {
     super(message)
   }
 }
