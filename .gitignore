@@ -42,7 +42,8 @@ jspm_packages
 
 # Build files
 docs/
-lib/
+cjs/
+esm/
 
 # Vim swap files
 *.swp
