@@ -1,1 +1,1 @@
-export { Paccurate, pack } from '../lib/index.js'
+export { Paccurate, pack } from '../cjs/index.js'

@@ -3,22 +3,22 @@
   "version": "1.4.1",
   "description": "Reduce fulfillment costs and wasted material by finding the optimal way to pack every shipment, in real time.",
   "author": "Mark <mark@remarkablemark.org>",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "cjs/index.js",
+  "types": "cjs/index.d.ts",
   "module": "module/index.mjs",
   "exports": {
-    "types": "./lib/index.d.ts",
+    "types": "./cjs/index.d.ts",
     "import": "./module/index.mjs",
-    "require": "./lib/index.js"
+    "require": "./cjs/index.js"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
-    "clean": "rm -rf coverage docs lib",
+    "build": "tsc",
+    "clean": "rm -rf cjs coverage docs",
     "docs": "typedoc",
     "docs:watch": "npm run docs -- --watch",
-    "lint": "eslint --ignore-path .gitignore --ext .js,.ts .",
+    "lint": "eslint --ignore-path .gitignore --ext .js,.mjs,.ts .",
     "lint:fix": "npm run lint -- --fix",
-    "lint:tsc": "tsc",
+    "lint:tsc": "tsc --noEmit",
     "postinstall": "husky install",
     "postpublish": "pinst --enable",
     "prepublishOnly": "pinst --disable && npm run lint && npm run lint:tsc && npm run test:ci && npm run clean && npm run build",
@@ -68,7 +68,7 @@
     "typescript": "5.1.6"
   },
   "files": [
-    "lib/",
+    "cjs/",
     "module/"
   ],
   "engines": {
