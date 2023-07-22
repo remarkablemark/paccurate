@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/remarkablemark/paccurate/compare/v1.4.1...v1.4.2) (2023-07-22)
+
+
+### Build System
+
+* rename directory `module` to `esm` ([6381db8](https://github.com/remarkablemark/paccurate/commit/6381db8618d24dc3b1b6783b643289ea701df528))
+
 ## [1.4.1](https://github.com/remarkablemark/paccurate/compare/v1.4.0...v1.4.1) (2023-07-01)
 
 
