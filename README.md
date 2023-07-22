@@ -6,7 +6,7 @@
 [![build](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/remarkablemark/paccurate/branch/master/graph/badge.svg?token=LQAQTQE0QI)](https://codecov.io/gh/remarkablemark/paccurate)
 
-Node.js client library for [Paccurate](https://paccurate.io/) (see [demo](https://replit.com/@remarkablemark/paccurate)). The types are generated from [Paccurate Swagger v1.5.7](https://api.paccurate.io/static/api/1.5.7/swagger.yaml).
+Node.js client library for [Paccurate](https://paccurate.io/). See [docs](https://remarkabl.org/paccurate/) and [demo](https://replit.com/@remarkablemark/paccurate). The types are generated from [Paccurate Swagger v1.5.7](https://api.paccurate.io/static/api/1.5.7/swagger.yaml).
 
 ## Quick Start
 
@@ -31,7 +31,9 @@ console.log(data)
 
 ## Documentation
 
-See [Paccurate docs](https://docs.paccurate.io/) and [API docs](https://api.paccurate.io/docs/).
+- [TypeDoc](https://remarkabl.org/paccurate/)
+- [Paccurate docs](https://docs.paccurate.io/)
+- [API docs](https://api.paccurate.io/docs/)
 
 ## Prerequisites
 
@@ -137,7 +139,7 @@ import type { Body, Response } from 'paccurate'
 
 ## Contributing
 
-We encourage contributions! Check out the [contributing guide](https://github.com/remarkablemark/paccurate/blob/master/.github/CONTRIBUTING.md) on how to proceed.
+Contributions are welcome! See our [contributing guide](https://github.com/remarkablemark/paccurate/blob/master/.github/CONTRIBUTING.md) on how to proceed. :wave:
 
 ## License
 
