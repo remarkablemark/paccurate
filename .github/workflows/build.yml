@@ -44,7 +44,7 @@ jobs:
           PACCURATE_API_KEY: ${{ secrets.PACCURATE_API_KEY }}
 
       - name: Run module tests
-        run: npm run test:module
+        run: npm run test:esm
 
       - name: Codecov
         uses: codecov/codecov-action@v3

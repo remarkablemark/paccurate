@@ -2,7 +2,7 @@ import { describe, it } from 'node:test'
 
 import assert from 'assert'
 
-import { Paccurate, pack } from './index.mjs'
+import { Paccurate, pack } from '../esm/index.js'
 
 describe('index', () => {
   it('exports "Paccurate" class', () => {
