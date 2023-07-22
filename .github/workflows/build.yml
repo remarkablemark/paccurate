@@ -48,3 +48,13 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v3
+
+      - name: Build docs
+        run: npm run docs
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/master'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: docs
