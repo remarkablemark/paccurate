@@ -139,7 +139,7 @@ import type { Body, Response } from 'paccurate'
 
 ## Contributing
 
-Contributions are welcome! See our [contributing guide](https://github.com/remarkablemark/paccurate/blob/master/.github/CONTRIBUTING.md) on how to proceed. :wave:
+Contributions are welcome! See our [guide](https://github.com/remarkablemark/paccurate/blob/master/.github/CONTRIBUTING.md) on how to proceed. :wave:
 
 ## License
 
