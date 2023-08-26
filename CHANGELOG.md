@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/remarkablemark/paccurate/compare/v1.4.2...v1.4.3) (2023-08-26)
+
+
+### Build System
+
+* **deps:** bump node-fetch from 2.6.12 to 2.7.0 ([#287](https://github.com/remarkablemark/paccurate/issues/287)) ([31d437a](https://github.com/remarkablemark/paccurate/commit/31d437a859b132542ffe6c03478282124c4b67fa))
+
 ## [1.4.2](https://github.com/remarkablemark/paccurate/compare/v1.4.1...v1.4.2) (2023-07-22)
 
 
