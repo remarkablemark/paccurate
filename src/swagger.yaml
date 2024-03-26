@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.5.7
+  version: 1.6.1
   title: paccurate.io
 paths:
   /:
@@ -37,6 +37,9 @@ paths:
                 type: string
               built:
                 description: build timestamp of engine.
+                type: string
+              startedAt:
+                description: start timestamp of pack.
                 type: string
               version:
                 description: version of engine
@@ -85,6 +88,9 @@ paths:
               itemSortUsed:
                 description: name of item sort algorithm used.
                 type: string
+              itemSortReverseUsed:
+                description: whether the item sort was reversed.
+                type: boolean
               boxTypeChoiceGoalUsed:
                 description: name of box type choice goal used.
                 type: string
@@ -119,6 +125,15 @@ paths:
                 type: array
                 items:
                   type: string
+              requestFingerprint:
+                description: a fingerprint corresponding to the request content for identification within Paccurate Manager.
+                type: string
+              responseFingerprint:
+                description: a fingerprint corresponding to the response content for identification within Paccurate Manager
+                type: string
+              packUuid:
+                description: a unique identifier for this pack transaction, which can be used to directly retrieve the pack via the Paccurate Manager.
+                type: string
         400:
           description: Bad request. Malformed or some other problem occurred processing the request.
           schema:
@@ -310,7 +325,7 @@ definitions:
       includeScripts:
         description: 'include inline javascripts and styles for base template'
         type: boolean
-        default: true
+        default: false
         example: false
       includeImages:
         description: 'include inline images, default is always on'
@@ -358,7 +373,7 @@ definitions:
           - mound
           - orb
       itemSort:
-        description: Method to use to sort items for placement. Default is item volume descending. 'largest-box-needed' is by the volume of the smallest box type specified that will fit the item, descending, 'largest-girth' is 2*(width + height), descending, 'longest-dimension' is by longest single item dimension, descending, 'shortest-dimension' is by shortest single dimension, ascending, 'largest-cross-section' is by largest product of the two greatest dimensions, descending, 'set-volume' is by total 'itemSet' volume, descending. It can often be worth attempting packs with competing itemSorts and picking the lowest cost option. 'combined' uses all possible item sorts (except 'set-volume') and returns the lowest 'totalCost' option.
+        description: Method to use to sort items for placement. Default is item volume descending. 'largest-box-needed' is by the volume of the smallest box type specified that will fit the item, descending, 'largest-girth' is 2*(width + height), descending, 'longest-dimension' is by longest single item dimension, descending, 'shortest-dimension' is by shortest single dimension, ascending, 'largest-cross-section' is by largest product of the two greatest dimensions, descending, 'set-volume' is by total 'itemSet' volume, descending. 'weight' is by weight, descending. 'density' is by item weight per unit volume, descending. It can often be worth attempting packs with competing itemSorts and picking the lowest cost option. 'all' uses all available item sorts, whereas 'combined' uses a recommended set of item sorts, both returning the lowest 'totalCost' option.
         type: string
         default: combined
         enum:
@@ -370,11 +385,18 @@ definitions:
           - shortest-dimension
           - largest-cross-section
           - set-volume
+          - density
+          - weight
           - combined
+          - all
       itemSortReverse:
         type: boolean
         default: false
         description: Whether or not to reverse the itemSort utilized.
+      itemSortDualDirection:
+        type: boolean
+        default: false
+        description: Whether or not to use both normal and reversed itemSorts.
       itemInitialOrientationBestForBox:
         type: boolean
         default: false
@@ -667,6 +689,7 @@ definitions:
     enum:
       - volume
       - surface-area
+      - surface-area-rsc
       - longest-dimension
       - middle-dimension
       - shortest-dimension
@@ -1184,7 +1207,7 @@ definitions:
         type: number
       dimFactor:
         type: number
-        description: This is the Dimensional Weight divisor. It is given in units of volume per unit weight, e.g., the standard of "139" represents 139 cubic inches per pound, and is used to convert the total volume of a carton into a functional minimum weight to be used when rating the carton. E.g., a carton with dimensions 10" x 10" x 13.9" would yield a volume of 1390 cubic inches. This yields <pre>cartonEffectiveMinimumWeight = 1390in&sup3; / 139in&sup3;/lb<br/>cartonEffectiveMinimumWeight = 10lbs</pre>
+        description: This is the Dimensional Weight divisor. It is given in units of volume per unit weight, e.g., the standard of "139" represents 139 cubic inches per pound, and is used to convert the total volume of a carton into a functional minimum weight to be used when rating the carton. E.g., a carton with dimensions 10" x 10" x 13.9" would yield a volume of 1390 cubic inches. This yields <pre>cartonEffectiveMinimumWeight = 1390in&sup3; / 139in&sup3;/lb<br/>cartonEffectiveMinimumWeight = 10lbs</pre>. To disable when using a preset carrier and zone, set to -1 or a very big number.
   Subspace:
     type: object
     title: Subspace

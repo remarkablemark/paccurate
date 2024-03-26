@@ -25,6 +25,8 @@ export interface paths {
             title?: string
             /** @description build timestamp of engine. */
             built?: string
+            /** @description start timestamp of pack. */
+            startedAt?: string
             /** @description version of engine */
             version?: string
             /** @description cardinality of all packed boxes */
@@ -55,6 +57,8 @@ export interface paths {
             leftovers?: definitions['Item'][]
             /** @description name of item sort algorithm used. */
             itemSortUsed?: string
+            /** @description whether the item sort was reversed. */
+            itemSortReverseUsed?: boolean
             /** @description name of box type choice goal used. */
             boxTypeChoiceGoalUsed?: string
             /** @description additional javascripts for any image loading. */
@@ -73,6 +77,12 @@ export interface paths {
             usedKeyStem?: string
             /** @description any warning messages about non-critical issues arising during the pack. */
             warnings?: string[]
+            /** @description a fingerprint corresponding to the request content for identification within Paccurate Manager. */
+            requestFingerprint?: string
+            /** @description a fingerprint corresponding to the response content for identification within Paccurate Manager */
+            responseFingerprint?: string
+            /** @description a unique identifier for this pack transaction, which can be used to directly retrieve the pack via the Paccurate Manager. */
+            packUuid?: string
           }
         }
         /** Bad request. Malformed or some other problem occurred processing the request. */
@@ -262,7 +272,7 @@ export interface definitions {
     template?: 'demo.tmpl' | 'shipapp.tmpl' | 'boat.tmpl'
     /**
      * @description include inline javascripts and styles for base template
-     * @default true
+     * @default false
      * @example false
      */
     includeScripts?: boolean
@@ -310,7 +320,7 @@ export interface definitions {
      */
     placementStyle?: 'default' | 'corner' | 'wedge' | 'mound' | 'orb'
     /**
-     * @description Method to use to sort items for placement. Default is item volume descending. 'largest-box-needed' is by the volume of the smallest box type specified that will fit the item, descending, 'largest-girth' is 2*(width + height), descending, 'longest-dimension' is by longest single item dimension, descending, 'shortest-dimension' is by shortest single dimension, ascending, 'largest-cross-section' is by largest product of the two greatest dimensions, descending, 'set-volume' is by total 'itemSet' volume, descending. It can often be worth attempting packs with competing itemSorts and picking the lowest cost option. 'combined' uses all possible item sorts (except 'set-volume') and returns the lowest 'totalCost' option.
+     * @description Method to use to sort items for placement. Default is item volume descending. 'largest-box-needed' is by the volume of the smallest box type specified that will fit the item, descending, 'largest-girth' is 2*(width + height), descending, 'longest-dimension' is by longest single item dimension, descending, 'shortest-dimension' is by shortest single dimension, ascending, 'largest-cross-section' is by largest product of the two greatest dimensions, descending, 'set-volume' is by total 'itemSet' volume, descending. 'weight' is by weight, descending. 'density' is by item weight per unit volume, descending. It can often be worth attempting packs with competing itemSorts and picking the lowest cost option. 'all' uses all available item sorts, whereas 'combined' uses a recommended set of item sorts, both returning the lowest 'totalCost' option.
      * @default combined
      * @enum {string}
      */
@@ -323,12 +333,20 @@ export interface definitions {
       | 'shortest-dimension'
       | 'largest-cross-section'
       | 'set-volume'
+      | 'density'
+      | 'weight'
       | 'combined'
+      | 'all'
     /**
      * @description Whether or not to reverse the itemSort utilized.
      * @default false
      */
     itemSortReverse?: boolean
+    /**
+     * @description Whether or not to use both normal and reversed itemSorts.
+     * @default false
+     */
+    itemSortDualDirection?: boolean
     /**
      * @description For all items where orientation flipping is used, the orientation producing the highest multiple of items fit per remaining dimension is used as the first orientation. This option should be enabled when packing high quantities of single item types, but may produce inconsistent results in other cases. Defers to item orientation locking and itemOrientationSearchDepth > 0 if a superior result is found.
      * @default false
@@ -574,6 +592,7 @@ export interface definitions {
   Metric:
     | 'volume'
     | 'surface-area'
+    | 'surface-area-rsc'
     | 'longest-dimension'
     | 'middle-dimension'
     | 'shortest-dimension'
@@ -988,7 +1007,7 @@ export interface definitions {
     priceIncreaseRate?: number
     /** @description The basePrice can be found by estimating the lowest weight-based rate available for a given service, in the example above, solving for basePrice for a $10, 1lb package with the already-solved priceIncreaseRate yields <pre>$10 = $5/lb * 1lb + basePrice<br/>$10 = $5 + basePrice<br/>basePrice = $5</pre> */
     basePrice?: number
-    /** @description This is the Dimensional Weight divisor. It is given in units of volume per unit weight, e.g., the standard of "139" represents 139 cubic inches per pound, and is used to convert the total volume of a carton into a functional minimum weight to be used when rating the carton. E.g., a carton with dimensions 10" x 10" x 13.9" would yield a volume of 1390 cubic inches. This yields <pre>cartonEffectiveMinimumWeight = 1390in&sup3; / 139in&sup3;/lb<br/>cartonEffectiveMinimumWeight = 10lbs</pre> */
+    /** @description This is the Dimensional Weight divisor. It is given in units of volume per unit weight, e.g., the standard of "139" represents 139 cubic inches per pound, and is used to convert the total volume of a carton into a functional minimum weight to be used when rating the carton. E.g., a carton with dimensions 10" x 10" x 13.9" would yield a volume of 1390 cubic inches. This yields <pre>cartonEffectiveMinimumWeight = 1390in&sup3; / 139in&sup3;/lb<br/>cartonEffectiveMinimumWeight = 10lbs</pre>. To disable when using a preset carrier and zone, set to -1 or a very big number. */
     dimFactor?: number
   }
   /** Subspace */
