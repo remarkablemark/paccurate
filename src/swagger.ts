@@ -31,8 +31,10 @@ export interface paths {
             version?: string
             /** @description cardinality of all packed boxes */
             lenBoxes?: number
-            /** @description cardinality of all items */
+            /** @description total sum of quantities of all items */
             lenItems?: number
+            /** @description cardinality of distinct units of items (count of cases, eaches, etc.) */
+            lenUnits?: number
             /** @description cardinality of items unabled to be packed */
             lenLeftovers?: number
             /** @description total estimated cost of all packed boxes, when applicable, in cents. */
@@ -678,13 +680,40 @@ export interface definitions {
     uniqueId?: string
     /** @description if specified, the uniqueId of the group-pack parent item this item belongs to. */
     groupPackParent?: string
+    /**
+     * @description quantity of basis item, i.e., eaches, this item represents, if dimensionSets were used with variable quantity contents.
+     * @default 1
+     */
+    quantity?: number
+    /** @description unit of measure, if specified. not defined or null if none. */
+    unitOfMeasure?: string
+    /** @description the "dimensionSet" used for this specific item object. */
+    dimensionSet?: definitions['DimensionSet']
   }
   /** @description set of items sharing a common type. */
   ItemSet: definitions['ItemProperties'] & {
     /** @description quantity of items of this type in this item set */
     quantity?: number
+    /** @description Alternate list of dimensions for automatic conversion of items into larger units of measure (optional). The first element is assumed to be "each", and will use the base "dimensions" and "weight" if none is provided. Additional units of measure are preferentially selected in reverse, from the last dimensionSet to the first. If the "quantityDivisor" value is less than the quantity of the itemSet, then the weight and dimensions are either automatically multiplied (with "axisMultipliers") or explicitly set with "dimensions" and "weight". The remaining item "quantity" is reduced by "quantityDivisor" as many times as possible, with remainders being filled by subordinate units of measure, with eaches being preserved last. Units are counted towards "lenUnits", whereas total item quantity counts towards "lenItems". NB, "alternate-dimensions" and "group-pack" should not be used with "dimensionSets" as they may cause unexpected results. */
+    dimensionSets?: definitions['DimensionSet'][]
   } & {
     quantity: unknown
+  }
+  /**
+   * DimensionSet
+   * @description A set of dimensions for a specific item unit of measure, to be assembled in an ordered, hierarchical list of DimensionSets, each representing a whole quantity of the item. Use "dimensions", "weight", and "quantityDivisor" properties when measurements are known (e.g., 8-count case outer "dimensions" with "weight" including the empty case weight, with 8 as the "quantityDivisor"), or "axisMultipliers" when trying to pack in known multiples of the base item dimensions (or when it is unknown), e.g., a 6-pack of soda would be `"axisMultipliers":{"x":1,"y":2,"z":3}` for a 1-high by 2-wide by 3-long arrangement. All dimension sets will be used if sufficient quantities exist without regard for available container size or rules, e.g., do not pass "pallet" for a small parcel shipment.
+   */
+  DimensionSet: {
+    /** @description Dimensions of the item in this configuration */
+    dimensions?: definitions['Point']
+    /** @description Multiples in x, y, and z directions of the item in this configuration. E.g., x:1, y:2, z:3 for a 3x2 6 pack of soda. If unspecified, "quantityDivisor" will default to the product of all 3 multiples. It it always relative to the basis dimensions of the item, i.e., each dimensions. */
+    axisMultipliers?: definitions['Point']
+    /** @description The quantity of the item contained in this configuration, i.e., in pieces or eaches. */
+    quantityDivisor?: number
+    /** @description The weight of the item in this configuration. If unspecified, "weight" will default to the basis item weight times "quantityDivisor". */
+    weight?: number
+    /** @description A string used to name or label the unit of measure. The first DimensionSet will always default to "each" unless otherwise specified. */
+    unitOfMeasure?: string
   }
   /**
    * ItemMatch
