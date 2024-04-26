@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/remarkablemark/paccurate/compare/v1.5.0...v1.6.0) (2024-04-26)
+
+
+### Features
+
+* **types:** bump paccurate swagger from 1.6.1 to 1.7.0 ([e4847e2](https://github.com/remarkablemark/paccurate/commit/e4847e2281edb5fdb4fbf3edeac28a40143a00bd))
+
 ## [1.5.0](https://github.com/remarkablemark/paccurate/compare/v1.4.4...v1.5.0) (2024-03-26)
 
 
