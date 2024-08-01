@@ -25,7 +25,7 @@
     {
       "files": ["src/swagger.ts"],
       "rules": {
-        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-empty-object-type": "off",
         "tsdoc/syntax": "off"
       }
     }
