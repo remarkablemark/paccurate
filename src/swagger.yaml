@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.7.0
+  version: 1.7.1
   title: paccurate.io
 paths:
   /:
@@ -171,9 +171,6 @@ definitions:
   Pack:
     type: object
     properties:
-      key:
-        description: issued API key.
-        type: string
       requestId:
         description: a client-provided string identifier for the pack request being made.
         type: string
@@ -476,9 +473,10 @@ definitions:
         minLength: 3
         example: [1, 2, 1]
       generatedBoxTypesMax:
-        description: The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit.
+        description: The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit. `64` is a sensible value.
         type: integer
         default: 0
+        example: 64
       valueTiebreaker:
         description: The tiebreaker to use in the event to box type choices are otherwise completely equal. Default is "volume", alternative is "weight".
         type: string
@@ -645,12 +643,11 @@ definitions:
         type: boolean
         default: false
       fitForFirstItem:
-        description: if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and step.
+        description: if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and increment.
         type: boolean
         default: false
-      step:
-        description: if deriveFromItems is not true, the number of increments to divide the range between min and max into, otherwise ignored.
-        default: 10
+      increment:
+        description: if `deriveFromItems` is not true, the desired increment for box dimension rounding. E.g., `0.25` for a box in inches would round up to the quarter inch. `10` would round to the next even 10s digit. Note that `min` and `max` are included as is, and are not rounded to the nearest `increment`. So, `min 5, max 59, increment 10` could produce any of `[5,10,20,30,40,50,59]` for this `GeneratorAxisRange`. Also note that small `increment` values would benefit from a `generatedBoxTypesMax` set.
         type: number
   GeneratorLimit:
     description: a generator limit for a given calculated box size metric.
@@ -675,9 +672,17 @@ definitions:
       metric:
         $ref: '#/definitions/Metric'
       # limit: allow a limit of times to stack
-      # aggregator: dictate how to aggregate prices when multiple conditions are met
+      aggregator:
+        description: how to aggregate `priceComponents` with common `key` values. `max` selects the largest threshold price across all `priceComponents` sharing a `key`. `product` takes the last (i.e., highest) matching threshold price from each `priceComponent` sharing a `key` and multiplies them together. `sum` simply sums all prices from all matching thresholds across all `priceComponents` sharing the same key. NB all `priceComponents` sharing a `key` must share the same `aggregator` to have predictable behavior.
+        type: string
+        default: max
+        required: false
+        enum:
+          - max
+          - product
+          - sum
       thresholds:
-        description: list of number thresholds of corresponding metric above which corresponding prices are triggered
+        description: list of number thresholds of corresponding metric above which corresponding prices are triggered. Note that thresholds are traversed in reverse in cases where order matters (e.g., when using the `product` aggregator)
         type: array
         items:
           type: number
@@ -698,6 +703,9 @@ definitions:
       - shortest-dimension
       - length-plus-girth
       - girth
+      - x-dimension
+      - y-dimension
+      - z-dimension
   Box:
     description: A completed, packed box.
     allOf:

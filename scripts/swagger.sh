@@ -34,7 +34,7 @@ npm run swagger-to-types
 echo 'Creating PR'
 BRANCH='feat/types'
 git checkout -b $BRANCH
-git commit -am "feat(types): bump paccurate swagger from $PROJECT_VERSION to $LATEST_VERSION"
+git commit -am "feat(types): bump Paccurate Swagger version from $PROJECT_VERSION to $LATEST_VERSION"
 git push origin $BRANCH
 gh pr create --assignee remarkablemark --fill --reviewer remarkablemark
 

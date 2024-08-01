@@ -139,9 +139,17 @@ The following types can be imported:
 import type { Body, Response } from 'paccurate'
 ```
 
+## Migration
+
+### v2
+
+Updated Paccurate Swagger version from [1.7.0](https://api.paccurate.io/static/api/1.7.0/swagger.yaml) to [1.7.1](https://api.paccurate.io/static/api/1.7.1/swagger.yaml).
+
+**BREAKING CHANGE:** Pack property `key` has been removed from Swagger.
+
 ## Contributing
 
-Contributions are welcome! See our [guide](https://github.com/remarkablemark/paccurate/blob/master/.github/CONTRIBUTING.md) on how to proceed. :wave:
+Contributions are welcome! See our [guide](https://github.com/remarkablemark/paccurate/blob/master/.github/CONTRIBUTING.md) on how to proceed. 👋
 
 ## License
 

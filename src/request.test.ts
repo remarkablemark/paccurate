@@ -9,9 +9,7 @@ const mockedFetch = jest.mocked(fetch)
 const apiUrl = 'https://api.paccurate.io/'
 const cloudApiUrl = 'https://cloud.api.paccurate.io/'
 
-const body = {
-  key: 'apikey',
-}
+const body = { boxTypeSets: ['fedex' as const] }
 
 const response = {
   json: jest.fn(),
