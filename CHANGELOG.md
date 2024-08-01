@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/remarkablemark/paccurate/compare/v1.6.0...v2.0.0) (2024-08-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **types:** Pack property `key` has been removed from Swagger
+
+### Features
+
+* **types:** bump Paccurate Swagger version from 1.7.0 to 1.7.1 ([27eeeb6](https://github.com/remarkablemark/paccurate/commit/27eeeb62b5104c78081dd6cda2439bf6b391dff8))
+
 ## [1.6.0](https://github.com/remarkablemark/paccurate/compare/v1.5.0...v1.6.0) (2024-04-26)
 
 
