@@ -1,5 +1,4 @@
-import { Paccurate, pack } from '.'
-import type { Body } from './types'
+import { type Body, Paccurate, pack, type PackBody } from '.'
 
 const { PACCURATE_API_KEY } = process.env
 
@@ -132,7 +131,7 @@ if (!PACCURATE_API_KEY) {
     })
 
     it('responds with error if body is empty', async () => {
-      await expect(pack(undefined as unknown as Body)).rejects.toMatchObject({
+      await expect(pack(undefined as unknown as PackBody)).rejects.toMatchObject({
         code: 400,
         message: 'EOF',
       })
@@ -248,7 +247,7 @@ if (!PACCURATE_API_KEY) {
     })
 
     it('responds with error if body is empty', async () => {
-      await expect(pack(undefined as unknown as Body)).rejects.toMatchObject({
+      await expect(pack(undefined as unknown as PackBody)).rejects.toMatchObject({
         code: 400,
         message: 'EOF',
       })

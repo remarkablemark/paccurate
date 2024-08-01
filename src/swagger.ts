@@ -115,8 +115,6 @@ export interface definitions {
     code: number
   }
   Pack: {
-    /** @description issued API key. */
-    key?: string
     /** @description a client-provided string identifier for the pack request being made. */
     requestId?: string
     /** @description a client-provided string identifier for the order this pack corresponds to. */
@@ -433,8 +431,9 @@ export interface definitions {
      */
     itemsInlineMax?: number[]
     /**
-     * @description The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit.
+     * @description The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit. `64` is a sensible value.
      * @default 0
+     * @example 64
      */
     generatedBoxTypesMax?: number
     /**
@@ -559,15 +558,12 @@ export interface definitions {
      */
     deriveFromItems?: boolean
     /**
-     * @description if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and step.
+     * @description if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and increment.
      * @default false
      */
     fitForFirstItem?: boolean
-    /**
-     * @description if deriveFromItems is not true, the number of increments to divide the range between min and max into, otherwise ignored.
-     * @default 10
-     */
-    step?: number
+    /** @description if `deriveFromItems` is not true, the desired increment for box dimension rounding. E.g., `0.25` for a box in inches would round up to the quarter inch. `10` would round to the next even 10s digit. Note that `min` and `max` are included as is, and are not rounded to the nearest `increment`. So, `min 5, max 59, increment 10` could produce any of `[5,10,20,30,40,50,59]` for this `GeneratorAxisRange`. Also note that small `increment` values would benefit from a `generatedBoxTypesMax` set. */
+    increment?: number
   }
   /** @description a generator limit for a given calculated box size metric. */
   GeneratorLimit: {
@@ -582,7 +578,13 @@ export interface definitions {
     /** @description key for a given price component, allowing for multiple metrics to calculate the same value, in which case the maximum price will be selected. */
     key?: string
     metric?: definitions['Metric']
-    /** @description list of number thresholds of corresponding metric above which corresponding prices are triggered */
+    /**
+     * @description how to aggregate `priceComponents` with common `key` values. `max` selects the largest threshold price across all `priceComponents` sharing a `key`. `product` takes the last (i.e., highest) matching threshold price from each `priceComponent` sharing a `key` and multiplies them together. `sum` simply sums all prices from all matching thresholds across all `priceComponents` sharing the same key. NB all `priceComponents` sharing a `key` must share the same `aggregator` to have predictable behavior.
+     * @default max
+     * @enum {string}
+     */
+    aggregator?: 'max' | 'product' | 'sum'
+    /** @description list of number thresholds of corresponding metric above which corresponding prices are triggered. Note that thresholds are traversed in reverse in cases where order matters (e.g., when using the `product` aggregator) */
     thresholds?: number[]
     /** @description list of integer price values to assign when corresponding thresholds are exceeded */
     prices?: number[]
@@ -600,6 +602,9 @@ export interface definitions {
     | 'shortest-dimension'
     | 'length-plus-girth'
     | 'girth'
+    | 'x-dimension'
+    | 'y-dimension'
+    | 'z-dimension'
   /** @description A completed, packed box. */
   Box: definitions['BoxProperties'] & {
     id?: number
