@@ -11,6 +11,7 @@ const config: Config = {
     },
   },
   preset: 'ts-jest',
+  setupFiles: ['dotenv/config'],
   testEnvironment: 'node',
 }
 
