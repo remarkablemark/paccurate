@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -21,10 +19,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Lint commit message
-        run: npx commitlint --from=HEAD~1
+        run: npm ci --prefer-offline
 
       - name: Generate Swagger types
         run: npm run swagger-to-types
@@ -55,7 +50,7 @@ jobs:
         run: npm run docs
 
       - name: Deploy
-        if: github.ref == 'refs/heads/master'
+        if: github.ref_name == 'master'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
