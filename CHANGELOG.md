@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/remarkablemark/paccurate/compare/v2.0.0...v2.0.1) (2024-08-28)
+
+
+### Continuous Integration
+
+* **github:** publish package to npm registry with provenance ([00cca03](https://github.com/remarkablemark/paccurate/commit/00cca034d2f6ab79f4d48410a51bc7fb2b5e920d))
+
 ## [2.0.0](https://github.com/remarkablemark/paccurate/compare/v1.6.0...v2.0.0) (2024-08-01)
 
 
