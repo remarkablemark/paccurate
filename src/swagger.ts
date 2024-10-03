@@ -464,6 +464,13 @@ export interface definitions {
     weightMax: number
     /** @description the [height,length,width] of the box. */
     dimensions: definitions['Point']
+    /** @description if required, data describing the outer dimensions of the box. */
+    outer?: {
+      /** @description on return, if an outer `dimensionChange` was specified, the final dimensions of the box. */
+      dimensions?: definitions['Point']
+      /** @description Outers must be specified as the difference of each dimension from the inner dimensions. E.g., an inner `x` of `10` with an outer `dimensionChange.x` of `0.25` would result in an `outer.dimensions.x` of `10.25`. Outers are only used for informational purposes, and for `pack-sequence` rule operations when using the `boxes-to-items` `reduce` method (to add outer dimensions to inner boxes when they are packed in later steps.) */
+      dimensionChange?: definitions['Point']
+    }
     /** @description the coordinates of the center of mass of the box. */
     centerOfMass?: definitions['Point']
     /**
@@ -493,6 +500,23 @@ export interface definitions {
     itemsInlineMax?: number[]
     /** @description An optional rate table definition for improved carton selection and pricing optimization. Defaults are included using retail rates for FedEx and UPS if carrier and service is provided, but optimization can be improved with more data passed in a carton's specific rate table. Methods are <ol><li>Provide carrier, service, and zone.</li><li>Provide all acceptable weights and prices to use for the carton, similar to actual carrier rate tables.</li><li>Provide the coefficients required for a simple linear weight-dependent pricing model.</li></ol> */
     rateTable?: definitions['RateTable']
+    /** @description In order to add arbitrary constraints for certain items based not upon weight or physical dimensions, a `propertyConstraint` can be added here for each additional numerical constraint desired. E.g., limiting the weight of a restricted component of an item to 5 lbs per box, while still allowing total item weight of, e.g., 50 lbs per box. All numeric properties are treated as unit amounts and summed individually (not at the `ItemSet` level). */
+    propertyConstraints?: {
+      /** @description the string matching the item `properties` key to search for. */
+      key?: string
+      /** @description the maximum allowable value for the member items with this property. */
+      max?: number
+      /**
+       * @description sum is the only supported aggregate function at present
+       * @default sum
+       */
+      aggregate?: string
+      /**
+       * @description the value of the constrained item property within this box. to set an initial value, include it in your `boxType` definition.
+       * @default 0
+       */
+      value?: number
+    }[]
   }
   /**
    * @description box types to be used for packing.
@@ -640,6 +664,8 @@ export interface definitions {
     dimensionalWeightUsed?: boolean
     /** @description cardinality of all non-virtual items packed in this box and in any dependent subspaces it contains */
     lenItems?: number
+    /** @description cardinality of distinct units of items (count of cases, eaches, etc.) */
+    lenUnits?: number
     /** @description raw svg of visualization. */
     svg?: string
     /** @description string representation of box center of mass. */
@@ -670,6 +696,25 @@ export interface definitions {
      * @default false
      */
     virtual?: boolean
+    /**
+     * @description Additional properties to track per unit, which are all returned in the response.  Numerical properties can be used in conjunction with box type `propertyConstraints` to control packing (very much akin to weight constraints).
+     * E.g., an item property on a Faberge egg of `"priceless-egg-quantity": 1` with a matching constraint of `"key": "priceless-egg-quantity", "max": 2, "aggregate": "sum"` would limit to 2 Faberge eggs per box.
+     * Another box constraint with `"key": "priceless-egg-quantity", "max": 0` instead would effectively prohibit any items with that quantity from packing in it, similar to an exclude rule.
+     * Conversely, each egg could have its own insurance amount, and there may be a maximum allowable amount per box, such as `"priceless-egg-value": 33000000` for one and `"priceless-egg-value": 22000000` for a second (for $55 million total) with a corresponding constraint of `"key": "priceless-egg-value", "max": 50000000` would prevent both eggs from being placed in one box, as $55 million exceeds the $50 million constraint on a single box (and they would be placed in their own boxes insured for $33 million and $22 million respectively
+     * @example {
+     *   "included-ice-lbs": 0.5,
+     *   "restricted-qty": 0.1,
+     *   "item-line-id": "1234-59581ABC-CAFE1909",
+     *   "wms-fields": {
+     *     "InternalItemID": 1398401,
+     *     "SKU": 49831,
+     *     "Location": "40-8012",
+     *     "Kit": false,
+     *     "OtherGenericProperties": "will be passed through and returned on the item."
+     *   }
+     * }
+     */
+    properties?: { [key: string]: unknown }
   }
   /** @description a specific, packed item. */
   Item: definitions['ItemProperties'] & {
@@ -986,6 +1031,64 @@ export interface definitions {
      *   }
      * }</pre>
      *   </li>
+     *   <li>
+     *     <h3>set-properties</h3>
+     *     <p>Set and optionally overwrite any properties on matching items. For example, a shipper who wishes to only ship 1 gallon of nail polish per box can limit all 1-gallon jugs of 50-50 spring water-nail polish solution based upon the weight of its 1/2 (64 oz) nail polish portion. Then, with appropriate box 'propertyConstraints', other items are unrestricted and only nail polish is constrained by its amount.</p>
+     *     <p><b>"options"</b> contents:</p>
+     *        <table>
+     *          <tr><th>key</th><th>value</th><th>description</th></tr>
+     *          <tr><td>properties</td><td>object</td><td>an object containing the key-value pairs to set on matching items</td></tr>
+     *          <tr><td>overwrite</td><td>boolean</td><td>overwrite properties on items with properties already present (default 'false')</td></tr>
+     *        </table>
+     *     <pre>{
+     *   "operation": "set-properties",
+     *   "itemMatch": {
+     *     "property": "name",
+     *     "expression": "50-50 SPRING WATER-NAIL POLISH SOLUTION, 1.0 GAL",
+     *   },
+     *   "options": {
+     *     "properties": {
+     *       "limited-weight-oz": 64.0
+     *     }
+     *   }
+     * }</pre>
+     *   </li>
+     *   <li>
+     *     <h3>pack-sequence</h3>
+     *     <p>Set and optionally overwrite any pack sequence value on matching items. Pack sequencing is useful for many purposes, mostly by powering multi-phase packing keyed of item metadata and using helpful reduce functions.</p>
+     *     <p><b>"options"</b> contents:</p>
+     *        <table>
+     *          <tr><th>key</th><th>value</th><th>description</th></tr>
+     *          <tr><td>index</td><td>integer</td><td>an object containing the key-value pairs to set on matching items</td></tr>
+     *          <tr><td>key</td><td>string</td><td>optional grouping key for separating item groups which must be sequenced at the same step, so their results are combined and processed together. E.g., two item groups are packed separately and in parallel, like (index 0, key "refrigerated") and (index 0, key "room-temperature"), which then both combine on a mixed pallet (index 1) when reduce is set to 'boxes-to-items'</td></tr>
+     *          <tr><td>reduce</td><td>enum</td><td>reduce method between steps. enum of 'default' (normal packing, done in strict 'index' order), 'pack-as-is' (boxes are locked after the 'index' step for strict sequence grouping, and 'boxes-to-items' (where boxes are remade as subspaces and then fed-forward as items, for kitting, inner/outer, case->pallet->truck load planning scenarios.)</td></tr>
+     *        </table>
+     *     <pre>[
+     *   {
+     *     "operation": "pack-sequence",
+     *     "itemMatch": {
+     *       "property": "sequence",
+     *       "expression": "VAS",
+     *     },
+     *     "options": {
+     *       "index": 0,
+     *       "key": "inner-step",
+     *       "reduce": "boxes-to-items"
+     *     }
+     *   },
+     *   {
+     *     "operation": "pack-sequence",
+     *     "itemMatch": {
+     *       "all": true
+     *     },
+     *     "options": {
+     *       "index": 1,
+     *       "key": "case-step",
+     *       "reduce": "boxes-to-items"
+     *     }
+     *   }
+     * ]</pre>
+     *   </li>
      * <ul>
      *
      * @enum {string}
@@ -999,6 +1102,9 @@ export interface definitions {
       | 'internal-space'
       | 'alternate-dimensions'
       | 'fragile'
+      | 'set-properties'
+      | 'group-pack'
+      | 'pack-sequence'
     /** @description additional key-value options to pass for rule based on operation type. */
     options?: { [key: string]: unknown }
     /** @description array of supplementary parameters to pass for rule, mostly deprecated. may be different from options. */
