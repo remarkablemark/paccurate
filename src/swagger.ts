@@ -718,8 +718,12 @@ export interface definitions {
   }
   /** @description a specific, packed item. */
   Item: definitions['ItemProperties'] & {
-    /** @description the sequence at which the item was packed. */
+    /** @description the item index referring to this instance, used by `data-volume-index` in the returned SVG data, `depthOrder`, `parentItemIndex`, etc.; may appear non-sequential as "virtual" display volumes are also given index values to permit SVG targeting. */
     index?: number
+    /** @description the internal packer global index assigned to this instance based upon packer item instantiation order. */
+    globalId?: number
+    /** @description this item's packing index, i.e., its position within the best-performing item sort. */
+    packedIndex?: number
     /** @description any relevant information or warnings about the packing of the item. */
     message?: string
     /** @description the [x,y,z] placement point of the back-bottom corner of the item. */

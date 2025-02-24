@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.7.2
+  version: 1.7.3
   title: paccurate.io
 paths:
   /:
@@ -892,7 +892,13 @@ definitions:
       properties:
         index:
           type: integer
-          description: the sequence at which the item was packed.
+          description: the item index referring to this instance, used by `data-volume-index` in the returned SVG data, `depthOrder`, `parentItemIndex`, etc.; may appear non-sequential as "virtual" display volumes are also given index values to permit SVG targeting.
+        globalId:
+          type: integer
+          description: the internal packer global index assigned to this instance based upon packer item instantiation order.
+        packedIndex:
+          type: integer
+          description: this item's packing index, i.e., its position within the best-performing item sort.
         message:
           type: string
           description: any relevant information or warnings about the packing of the item.
