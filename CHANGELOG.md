@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/remarkablemark/paccurate/compare/v2.2.0...v2.2.1) (2025-03-23)
+
+
+### Build System
+
+* **package:** move `@types/node-fetch` from deps to optional peerDeps ([90246a7](https://github.com/remarkablemark/paccurate/commit/90246a717a3decd9a03b60d24d7cfc7cae735b93))
+
 ## [2.2.0](https://github.com/remarkablemark/paccurate/compare/v2.1.0...v2.2.0) (2025-02-24)
 
 
