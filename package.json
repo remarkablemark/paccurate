@@ -42,7 +42,6 @@
     "api"
   ],
   "dependencies": {
-    "@types/node-fetch": "2.6.11",
     "node-fetch": "2.7.0"
   },
   "devDependencies": {
@@ -53,6 +52,7 @@
     "@eslint/js": "9.22.0",
     "@types/jest": "29.5.14",
     "@types/node": "22.13.11",
+    "@types/node-fetch": "2.6.12",
     "@typescript-eslint/eslint-plugin": "8.27.0",
     "@typescript-eslint/parser": "8.27.0",
     "dotenv": "16.4.7",
@@ -69,6 +69,14 @@
     "ts-jest": "29.2.6",
     "typedoc": "0.28.1",
     "typescript": "5.8.2"
+  },
+  "peerDependencies": {
+    "@types/node-fetch": "2"
+  },
+  "peerDependenciesMeta": {
+    "@types/node-fetch": {
+      "optional": true
+    }
   },
   "files": [
     "cjs/",
