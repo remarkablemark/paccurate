@@ -20,7 +20,7 @@ describe('Paccurate', () => {
   it('sends post request to default endpoint', async () => {
     const paccurate = new Paccurate(apiKey)
     expect(await paccurate.pack(body)).toBe(data)
-    expect(mockedPost).toBeCalledWith('https://api.paccurate.io/', body, {
+    expect(mockedPost).toHaveBeenCalledWith('https://api.paccurate.io/', body, {
       headers: {
         Authorization: `apikey ${apiKey}`,
       },
@@ -31,7 +31,7 @@ describe('Paccurate', () => {
     const apiUrl = 'https://cloud.api.paccurate.io/'
     const paccurate = new Paccurate(apiKey, apiUrl)
     expect(await paccurate.pack(body)).toBe(data)
-    expect(mockedPost).toBeCalledWith(apiUrl, body, {
+    expect(mockedPost).toHaveBeenCalledWith(apiUrl, body, {
       headers: {
         Authorization: `apikey ${apiKey}`,
       },
