@@ -10,6 +10,7 @@ const config: Config = {
       statements: 100,
     },
   },
+  moduleFileExtensions: ['js', 'ts'],
   preset: 'ts-jest',
   setupFiles: ['dotenv/config'],
   testEnvironment: 'node',
