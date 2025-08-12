@@ -24,7 +24,7 @@
     "swagger-to-types": "openapi-typescript src/swagger.yaml --output src/swagger.ts --prettier-config .prettierrc.json",
     "test": "jest",
     "test:ci": "CI=true jest --ci --colors --coverage",
-    "test:esm": "npm run build:esm && node --test",
+    "test:esm": "npm run build:esm && node --test **/*.test.mjs",
     "test:watch": "jest --watch"
   },
   "repository": {
