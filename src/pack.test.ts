@@ -18,13 +18,13 @@ beforeEach(() => {
 
 describe('pack', () => {
   it('sends post request to default endpoint', async () => {
-    const body = { key, boxTypeSets: ['fedex' as const] }
+    const body = { key, boxTypeSets: ['customer' as const] }
     expect(await pack(body)).toBe(data)
     expect(mockedPost).toHaveBeenCalledWith('https://api.paccurate.io/', body, options)
   })
 
   it('sends post request to cloud endpoint', async () => {
-    const body = { key, boxTypeSets: ['fedex' as const] }
+    const body = { key, boxTypeSets: ['customer' as const] }
     expect(await pack(body, 'https://cloud.api.paccurate.io/')).toBe(data)
     expect(mockedPost).toHaveBeenCalledWith('https://cloud.api.paccurate.io/', body, options)
   })

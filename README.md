@@ -25,7 +25,7 @@ const data = await pack({
       weight: 4.5,
     },
   ],
-  boxTypeSets: ['fedex'],
+  boxTypeSets: ['customer'],
 })
 
 console.log(data)
