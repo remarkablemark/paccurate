@@ -17,7 +17,7 @@ const body: Body = {
       weight: 4.5,
     },
   ],
-  boxTypeSets: ['fedex'],
+  boxTypeSets: ['customer'],
 }
 
 describe('Paccurate', () => {

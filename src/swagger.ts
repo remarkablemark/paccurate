@@ -209,7 +209,7 @@ export interface definitions {
      */
     reservedSpace?: number
     /**
-     * @description predefined box types to be used, separated by commas. Will be overridden by boxTypes. Acceptable values are <ul><li>"fedex"--FedEx OneRate</li><li>"usps"--USPS Priority Flat Rate</li><li>"pallet"--full-, half-, and quarter-sized 48"x40" pallets.
+     * @description predefined box types to be used, separated by commas.
      * @example []
      */
     boxTypeSets?: definitions['BoxTypeSet'][]
@@ -282,11 +282,11 @@ export interface definitions {
      */
     imgSize?: number
     /**
-     * @description template name for markup generation.
+     * @description template name for markup generation. If `classic`, returns style inline for generated SVGs (including box border markings)
      * @example
      * @enum {string}
      */
-    template?: 'demo.tmpl' | 'shipapp.tmpl' | 'boat.tmpl'
+    template?: 'demo.tmpl' | 'shipapp.tmpl' | 'boat.tmpl' | 'classic'
     /**
      * @description include inline javascripts and styles for base template
      * @default false
@@ -324,7 +324,7 @@ export interface definitions {
      */
     coordOrder?: number[]
     /**
-     * @description if selected, will ensure that all like items will be packed together, in no more than [cohortMax] different groups within a single container.
+     * @description if selected, will ensure that all like items will be packed together, in no more than [cohortMax] different groups within a single container. Not to be confused with `boxTypeChoiceLookback` constraints for reducing item spreading across containers and improving consolidation based on `sequence`.
      * @default false
      */
     cohortPacking?: boolean
@@ -383,7 +383,7 @@ export interface definitions {
      */
     itemInitialOrientationPreferred?: boolean
     /**
-     * @description When itemInitialOrientationPreferred is set to false, the itemOrientationSearchDepth is the number of unique, sorted, groups of Items sharing the same ItemSet definition that will be have every combination of initial orientation attempted. A value of 1 signifies that only the first item (and others still unpacked from its ItemSet) will have every orientation attempted and the engine subsequently selecting the most performant. A value of 2 signifies that the first groups of unpacked items, each sharing an ItemSet, will have every combination of orientation attempted. Increasing this value from 1 can very rapidly result in excessive complexity and a timeout error instead of a result, so discretion is advised.
+     * @description When itemInitialOrientationPreferred is set to false, the itemOrientationSearchDepth is the number of unique, sorted, groups of Items sharing the same ItemSet definition that will be have every combination of initial orientation attempted. A value of 1 signifies that only the first item (and others still unpacked from its ItemSet) will have every orientation attempted and the engine subsequently selecting the most performant. A value of 2 signifies that the first groups of unpacked items, each sharing an ItemSet, will have every combination of orientation attempted. Increasing this value from 1 can very rapidly result in excessive complexity and a timeout error instead of a result, so discretion is advised. Requesting a depth in excess of the maximum will return a warning and allow the request the complete with the setting reduced to its maximum.
      * @default 1
      */
     itemOrientationSearchDepth?: number
@@ -411,7 +411,7 @@ export interface definitions {
      */
     boxTypeChoiceLookahead?: number
     /**
-     * @description Control the ability for partially-filled boxes to allow packing of later-sorted items. A value of null or -1 means unlimited lookback is permitted, i.e., every box can be used to pack any allowable item that fits regardless of its pack sequence, and all boxes will remain "opened" or available for packing until the last item in the pack sequence is attempted. A value of 0 means lookback is not allowed, and as soon as the next item in the pack sequence does not fit into a partially filled box, that box is "closed" or locked and will not permit any additional items (i.e., out-of-sequence items) to be packed in it.
+     * @description Control the ability for partially-filled boxes to allow packing of later-sorted items. When used with `sequence`, it can greatly reduce item set fragmentation across multiple containers and improve consolidation, sometimes at the expense of overall container count and volume utilization. A value of null or -1 means unlimited lookback is permitted, i.e., every box can be used to pack any allowable item that fits regardless of its pack sequence, and all boxes will remain "opened" or available for packing until the last item in the pack sequence is attempted. A value of 0 means lookback is not allowed, and as soon as the next item in the pack sequence does not fit into a partially filled box, that box is "closed" or locked and will not permit any additional items (i.e., out-of-sequence items) to be packed in it.
      * @default -1
      */
     boxTypeChoiceLookback?: number
@@ -564,10 +564,10 @@ export interface definitions {
    */
   BoxType: definitions['BoxProperties']
   /**
-   * @description box type sets for useful defaults.
+   * @description box type sets for convenient demo defaults.
    * @enum {string}
    */
-  BoxTypeSet: 'usps' | 'fedex' | 'pallet' | 'customer'
+  BoxTypeSet: 'customer'
   /** @description A generator of box types, specifying bounds of acceptable box types and defining dynamic cost characteristics. */
   BoxTypeGenerator: {
     /** @description default attributes for all generated "boxTypes" */
@@ -733,10 +733,15 @@ export interface definitions {
      */
     virtual?: boolean
     /**
-     * @description Additional properties to track per unit, which are all returned in the response.  Numerical properties can be used in conjunction with box type `propertyConstraints` to control packing (very much akin to weight constraints).
+     * @description Additional properties to track per unit, which are all returned in the response.
+     * Numerical properties can be used in conjunction with box type `propertyConstraints` to control packing (very much akin to weight constraints).
+     *
      * E.g., an item property on a Faberge egg of `"priceless-egg-quantity": 1` with a matching constraint of `"key": "priceless-egg-quantity", "max": 2, "aggregate": "sum"` would limit to 2 Faberge eggs per box.
+     *
      * Another box constraint with `"key": "priceless-egg-quantity", "max": 0` instead would effectively prohibit any items with that quantity from packing in it, similar to an exclude rule.
-     * Conversely, each egg could have its own insurance amount, and there may be a maximum allowable amount per box, such as `"priceless-egg-value": 33000000` for one and `"priceless-egg-value": 22000000` for a second (for $55 million total) with a corresponding constraint of `"key": "priceless-egg-value", "max": 50000000` would prevent both eggs from being placed in one box, as $55 million exceeds the $50 million constraint on a single box (and they would be placed in their own boxes insured for $33 million and $22 million respectively
+     *
+     * Conversely, each egg could have its own insurance amount, and there may be a maximum allowable amount per box, such as `"priceless-egg-value": 33000000` for one and `"priceless-egg-value": 22000000` for a second (for $55 million total) with a corresponding constraint of `"key": "priceless-egg-value", "max": 50000000` would prevent both eggs from being placed in one box, as $55 million exceeds the $50 million constraint on a single box (and they would be placed in their own boxes insured for $33 million and $22 million respectively'
+     *
      * @example {
      *   "included-ice-lbs": 0.5,
      *   "restricted-qty": 0.1,
@@ -806,6 +811,26 @@ export interface definitions {
     unitOfMeasure?: string
   }
   /**
+   * BoxMatch
+   * @description Specify the boxes a rule applies to based upon a search substring of a `boxType` property. Both 'expression' and 'property' must be set.
+   */
+  BoxMatch: {
+    /**
+     * @description the boxType property to search with the expression.
+     * @enum {string}
+     */
+    property?: 'name'
+    /** @description the query string to search the specified boxType property for. */
+    expression?: string
+    /** @description query strings to search the specified boxType property for. */
+    expressions?: string[]
+    /**
+     * @description if true, negate substring search so rule applies only to boxType properties not matching expression.
+     * @default false
+     */
+    negate?: boolean
+  }
+  /**
    * ItemMatch
    * @description Specify the items a rule applies to based upon a search substring of an itemSet property. Either 'all' must be set to true or both 'expression' and 'property' must be set.
    */
@@ -839,6 +864,10 @@ export interface definitions {
     targetItemRefIds?: number[]
     /** @description target item sequences that the rule applies to. */
     targetItemSequences?: string[]
+    /** @description optional object defining a substring search and property to search for target items the rule applies to */
+    targetItemMatch?: definitions['ItemMatch']
+    /** @description optional object defining a substring search and property to search for target boxes the rule applies to */
+    targetBoxMatch?: definitions['BoxMatch']
     /** @description target box reference IDs that the rule applies to. */
     targetBoxRefIds?: number[]
     /** @description If true, `ignoreSubspaces` enforces that the relationship between a source item and any target object must be direct for the rule to apply, either between two items that are direct members of the same box, or between an item and its direct parent box. For instance, any items in an inner pack (like from `pack-sequence`) which is then packed in an outer, would not have the rule applied when `ignoreSubspaces` is true. */

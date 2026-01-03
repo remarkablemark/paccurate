@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.8.0
+  version: 1.9.0
   title: paccurate.io
 paths:
   /:
@@ -8,15 +8,15 @@ paths:
       description: |
         a pure-JSON endpoint for packing requests.
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - name: pack
-        in: body
-        description: complete set of items, boxes, and parameters to pack.
-        schema:
-          $ref: "#/definitions/Pack"
+        - name: pack
+          in: body
+          description: complete set of items, boxes, and parameters to pack.
+          schema:
+            $ref: '#/definitions/Pack'
       responses:
         200:
           description: Successful pack.
@@ -115,10 +115,10 @@ paths:
                 description: a client-provided string identifier for the pack request being made.
                 type: string
               imageScale:
-                description: "if `includeImages` is enabled, the returned `imageScale` is the minimum scale (defined in the original 3D space) used to determine the relative size of all images. If empty, it is the same as the default, [0,0,0], equivalent to `imageScaleStyle` set to `fill`. If the `imageScale` is _larger_ than each returned box image, the box images are each scaled identically. NB: `imageScale` is omitted from the response if zero [0,0,0]"
+                description: 'if `includeImages` is enabled, the returned `imageScale` is the minimum scale (defined in the original 3D space) used to determine the relative size of all images. If empty, it is the same as the default, [0,0,0], equivalent to `imageScaleStyle` set to `fill`. If the `imageScale` is _larger_ than each returned box image, the box images are each scaled identically. NB: `imageScale` is omitted from the response if zero [0,0,0]'
                 required: false
                 allOf:
-                - $ref: "#/definitions/Point"
+                  - $ref: '#/definitions/Point'
                 default:
                   x: 0
                   y: 0
@@ -129,10 +129,10 @@ paths:
                 default: fill
                 type: string
                 enum:
-                - fill
-                - largest-box
-                - largest-box-type
-                - override
+                  - fill
+                  - largest-box
+                  - largest-box-type
+                  - override
               images:
                 description: if PNG imageFormat selected, list of PNG image objects.
                 type: array
@@ -159,25 +159,25 @@ paths:
         400:
           description: Bad request. Malformed or some other problem occurred processing the request.
           schema:
-            $ref: "#/definitions/Error"
+            $ref: '#/definitions/Error'
         422:
           description: Invalid input. The request was well-formed, but the parameters were contradictory, invalid, or otherwise somehow unable to be processed. More information will be contained in the error details.
-          schema: 
-            $ref: "#/definitions/Error"
+          schema:
+            $ref: '#/definitions/Error'
         429:
           description: Rate limited. Without an API key, only 10 unique requests are allowed per day for testing or demonstration purposes. Note that a randomized pack repeated is only a single unique request.
-          schema: 
-            $ref: "#/definitions/Error"
+          schema:
+            $ref: '#/definitions/Error'
         500:
           description: Unexpected error.
-          schema: 
-            $ref: "#/definitions/Error"
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Error:
     type: object
     required:
-    - message
-    - code
+      - message
+      - code
     properties:
       message:
         type: string
@@ -190,339 +190,341 @@ definitions:
   Pack:
     type: object
     properties:
-        requestId:
-          description: a client-provided string identifier for the pack request being made.
-          type: string
-        orderId:
-          description: a client-provided string identifier for the order this pack corresponds to.
-          type: string
-        layFlat:
-          description: aligns all items laying flat. If possible, it may create a "brick-laying" pattern to increase stability.
-          type: boolean
-          default: false
-        interlock:
-          description: alternates layFlat orientation by layer, so as to create an interlocked placement pattern and improve item stability.
-          type: boolean
-          default: false
-        corners:
-          type: boolean
-          description: only pack items at valid corner points of other items (optimal)
-          default: true
-        itemSets:
-          description: item set definitions if not creating random items.
-          type: array
-          items:
-            $ref: "#/definitions/ItemSet"
-          example:
-            - refId: 0
-              color: tomato
-              dimensions: 
-                x: 4.2
-                y: 7
-                z: 8
-              weight: 4.5
-              quantity: 10
-            - refId: 1
-              color: cornflowerblue
-              dimensions: 
-                x: 3
-                y: 3
-                z: 5
-              weight: 2
-              quantity: 13
-        boxTypes:
-          description: box type definitions for packing, will override boxTypeSets defined.
-          type: array
-          items:
-            $ref: "#/definitions/BoxType"
-        boxTypeGenerators:
-          description: list of dynamic boxTypeGenerators to use, in combination with boxTypes
-          type: array
-          items:
-            $ref: "#/definitions/BoxTypeGenerator"
-        boxTypeDefaults:
-          description: default attributes for all "boxTypes", to be overridden by any individual "boxType" attributes specified.
-          example:
-            weightMax: 50
-            rateTable: 
-              dimFactor: 166
-          allOf:
-          - $ref: "#/definitions/BoxProperties"
-        boxes:
-          description: pre-packed boxes, including any items specified that will be packed and excess space used before any new boxes are created.
-          type: array
-          items:
-            $ref: "#/definitions/Box"
-          example: []
-        usableSpace:
-          description: an estimate of typical box utilization for the quick "estimated" boxTypeChoiceStyle, which will be used to ensure "estimated" box type choices are not overly optimistic regarding potential volume utilization.
-          minimum: 0
-          maximum: 1
-          default: 0.85
-          example: 0.85
-          type: number
-        reservedSpace:
-          description: space in boxes that is reserved, i.e., for packing material.
-          minimum: 0
-          maximum: 1
-          default: 0
-          example: 0.2
-          type: number
-        boxTypeSets:
-          description: predefined box types to be used, separated by commas. Will be overridden by boxTypes. Acceptable values are <ul><li>"fedex"--FedEx OneRate</li><li>"usps"--USPS Priority Flat Rate</li><li>"pallet"--full-, half-, and quarter-sized 48"x40" pallets.
-          type: array
-          items:
-            $ref: "#/definitions/BoxTypeSet"
-          example: []
-        eye:
-          description: The x,y,z coordinates of the virtual eye looking at the package for visualization purposes. Default is isometric, "1,1,1". To generate a side view, one could use "0.001,1.0,0.001".
-          example:
-            x: 1
-            y: 1
-            z: 1
-          allOf:
-          - $ref: "#/definitions/Point"
-        packOrigin:
-          description: the x,y,z coordinates of an optional packing origin. A packing origin is used to create more balanced packing for situations where load needs to be considered. E.g., for a 40"x48" pallet, a packOrigin representing the middle of the pallet, "0,20,24", would cause placement to minimize the distance of the packed items from the center of the pallet.
-          allOf:
-          - $ref: "#/definitions/Point"
-          example:
-            x: 0
-            y: 0
-            z: 0
-        zone:
-          description: <b>[deprecated]</b> the shipping zone in order to use basic zone-based price optimization.
-          type: integer
-          example: null
-          minimum: 1
-        rules:
-          type: array
-          description: Array of packing rules.
-          items:
-            $ref: "#/definitions/Rule"
-          example: []
-        random:
-          description: create random items
-          type: boolean
-          default: false
-        n:
-          description: number of random items to generate and the quantity of each if "random" is set to true. a value of 5 would create 5 different items with a quantity of 5 each, making the total item quantity equal to n&sup2;
-          type: integer
-          default: 5
-        randomMaxDimension:
-          description: maximum item dimension along a single axis for randomly generated items.
-          type: integer
-          default: 10
-        randomMaxWeight:
-          description: maximum item weight for randomly generated items.
-          type: integer
-          default: 10
-        randomMaxQuantity:
-          description: maximum quantity for randomly generated items.
-          type: integer
-        seed:
-          type: boolean
-          description: if random is selected, seed the random number generator to deterministically generate random items to pack.
-          default: true
-          example: false
-        seedValue:
-          type: integer
-          description: if seed is set to true, specifies a non-default seed for the random number generator.
-          default: 1
-        seedFromOrderId: 
-          type: boolean
-          description: if seed is set to true and a non-blank `orderId` is passed, the `orderId` checksum will be used as a deterministic random seed.
-        imgSize:
-          description: width of rendered SVGs in pixels.
-          type: integer
-          default: 400
-        template:
-          description: template name for markup generation.
-          type: string
-          enum:
+      requestId:
+        description: a client-provided string identifier for the pack request being made.
+        type: string
+      orderId:
+        description: a client-provided string identifier for the order this pack corresponds to.
+        type: string
+      layFlat:
+        description: aligns all items laying flat. If possible, it may create a "brick-laying" pattern to increase stability.
+        type: boolean
+        default: false
+      interlock:
+        description: alternates layFlat orientation by layer, so as to create an interlocked placement pattern and improve item stability.
+        type: boolean
+        default: false
+      corners:
+        type: boolean
+        description: only pack items at valid corner points of other items (optimal)
+        default: true
+      itemSets:
+        description: item set definitions if not creating random items.
+        type: array
+        items:
+          $ref: '#/definitions/ItemSet'
+        example:
+          - refId: 0
+            color: tomato
+            dimensions:
+              x: 4.2
+              y: 7
+              z: 8
+            weight: 4.5
+            quantity: 10
+          - refId: 1
+            color: cornflowerblue
+            dimensions:
+              x: 3
+              y: 3
+              z: 5
+            weight: 2
+            quantity: 13
+      boxTypes:
+        description: box type definitions for packing, will override boxTypeSets defined.
+        type: array
+        items:
+          $ref: '#/definitions/BoxType'
+      boxTypeGenerators:
+        description: list of dynamic boxTypeGenerators to use, in combination with boxTypes
+        type: array
+        items:
+          $ref: '#/definitions/BoxTypeGenerator'
+      boxTypeDefaults:
+        description: default attributes for all "boxTypes", to be overridden by any individual "boxType" attributes specified.
+        example:
+          weightMax: 50
+          rateTable:
+            dimFactor: 166
+        allOf:
+          - $ref: '#/definitions/BoxProperties'
+      boxes:
+        description: pre-packed boxes, including any items specified that will be packed and excess space used before any new boxes are created.
+        type: array
+        items:
+          $ref: '#/definitions/Box'
+        example: []
+      usableSpace:
+        description: an estimate of typical box utilization for the quick "estimated" boxTypeChoiceStyle, which will be used to ensure "estimated" box type choices are not overly optimistic regarding potential volume utilization.
+        minimum: 0
+        maximum: 1
+        default: 0.85
+        example: 0.85
+        type: number
+      reservedSpace:
+        description: space in boxes that is reserved, i.e., for packing material.
+        minimum: 0
+        maximum: 1
+        default: 0
+        example: 0.2
+        type: number
+      boxTypeSets:
+        description: predefined box types to be used, separated by commas.
+        type: array
+        items:
+          $ref: '#/definitions/BoxTypeSet'
+        example: []
+      eye:
+        description: The x,y,z coordinates of the virtual eye looking at the package for visualization purposes. Default is isometric, "1,1,1". To generate a side view, one could use "0.001,1.0,0.001".
+        example:
+          x: 1
+          y: 1
+          z: 1
+        allOf:
+          - $ref: '#/definitions/Point'
+      packOrigin:
+        description: the x,y,z coordinates of an optional packing origin. A packing origin is used to create more balanced packing for situations where load needs to be considered. E.g., for a 40"x48" pallet, a packOrigin representing the middle of the pallet, "0,20,24", would cause placement to minimize the distance of the packed items from the center of the pallet.
+        allOf:
+          - $ref: '#/definitions/Point'
+        example:
+          x: 0
+          y: 0
+          z: 0
+      zone:
+        description: <b>[deprecated]</b> the shipping zone in order to use basic zone-based price optimization.
+        type: integer
+        example: null
+        minimum: 1
+      rules:
+        type: array
+        description: Array of packing rules.
+        items:
+          $ref: '#/definitions/Rule'
+        example: []
+      random:
+        description: create random items
+        type: boolean
+        default: false
+      n:
+        description: number of random items to generate and the quantity of each if "random" is set to true. a value of 5 would create 5 different items with a quantity of 5 each, making the total item quantity equal to n&sup2;
+        type: integer
+        default: 5
+      randomMaxDimension:
+        description: maximum item dimension along a single axis for randomly generated items.
+        type: integer
+        default: 10
+      randomMaxWeight:
+        description: maximum item weight for randomly generated items.
+        type: integer
+        default: 10
+      randomMaxQuantity:
+        description: maximum quantity for randomly generated items.
+        type: integer
+      seed:
+        type: boolean
+        description: if random is selected, seed the random number generator to deterministically generate random items to pack.
+        default: true
+        example: false
+      seedValue:
+        type: integer
+        description: if seed is set to true, specifies a non-default seed for the random number generator.
+        default: 1
+      seedFromOrderId:
+        type: boolean
+        description: if seed is set to true and a non-blank `orderId` is passed, the `orderId` checksum will be used as a deterministic random seed.
+      imgSize:
+        description: width of rendered SVGs in pixels.
+        type: integer
+        default: 400
+      template:
+        description: template name for markup generation. If `classic`, returns style inline for generated SVGs (including box border markings)
+        type: string
+        enum:
           - demo.tmpl
           - shipapp.tmpl
           - boat.tmpl
-          example: ""
-        includeScripts:
-          description: "include inline javascripts and styles for base template"
-          type: boolean
-          default: false
-          example: false
-        includeImages:
-          description: "include inline images, default is always on"
-          type: boolean
-          default: true
-          example: true
-        imageFormat:
-          description: case-insensitive format to render images in, either 'SVG' or 'PNG', if `includeImages` is enabled.
-          type: string
-          default: svg
-          enum:
+          - classic
+        example: ''
+      includeScripts:
+        description: 'include inline javascripts and styles for base template'
+        type: boolean
+        default: false
+        example: false
+      includeImages:
+        description: 'include inline images, default is always on'
+        type: boolean
+        default: true
+        example: true
+      imageFormat:
+        description: case-insensitive format to render images in, either 'SVG' or 'PNG', if `includeImages` is enabled.
+        type: string
+        default: svg
+        enum:
           - svg
           - png
-        imageScale:
-          description: if `includeImages` is enabled, `imageScale` forces the minimum scale for image (will expand if needed). Overrides `imageScaleStyle` when any non-zero values are included.
-          required: false
-          allOf:
-          - $ref: "#/definitions/Point"
-        imageScaleStyle:
-          description: If desired, a methodology to automatically scale images consistently. Empty or not set is the same as `fill`, which will scale each image to fill the `imgSize` view automatically. `largest-box` will scale all box images to the largest `box` actually used in the pack, and `largest-box-type` will scale all box images to the largest `BoxType` available in the pack (including those generated by a `BoxTypeGenerator`.) `largest-box` is useful if boxes will be visually compared within a single pack, and `largest-box-type` is more usable if pack images are going to be visually compared across boxes and packs. Any non-zero values in `imageScale` will take precedence and disable the `imageScaleStyle`.
-          type: string
-          required: false
-          default: fill
-          enum:
+      imageScale:
+        description: if `includeImages` is enabled, `imageScale` forces the minimum scale for image (will expand if needed). Overrides `imageScaleStyle` when any non-zero values are included.
+        required: false
+        allOf:
+          - $ref: '#/definitions/Point'
+      imageScaleStyle:
+        description: If desired, a methodology to automatically scale images consistently. Empty or not set is the same as `fill`, which will scale each image to fill the `imgSize` view automatically. `largest-box` will scale all box images to the largest `box` actually used in the pack, and `largest-box-type` will scale all box images to the largest `BoxType` available in the pack (including those generated by a `BoxTypeGenerator`.) `largest-box` is useful if boxes will be visually compared within a single pack, and `largest-box-type` is more usable if pack images are going to be visually compared across boxes and packs. Any non-zero values in `imageScale` will take precedence and disable the `imageScaleStyle`.
+        type: string
+        required: false
+        default: fill
+        enum:
           - fill
           - largest-box
           - largest-box-type
-        coordOrder:
-          description: If placementStyle is set to "default", coordOrder sets the placement priority of axes ascendingly. "0,1,2" would search for placement points along the Z(length,"2"), then Y(width,"1"), and finally X(height"0"). Keep in mind that in the default rendering the "up" direction is X and the other axes follow the right-hand rule.
-          
-           This is useful for different packing methods. E.g., Utilizing "2,0,1" would pack a shipping container first in the Y(width) direction, then in the X(height) direction, and finally in the Z(length) direction, replication a floor-to-ceiling, front-to-back loading method.
-          type: array
-          items:
-            type: integer
-          maxLength: 3
-          minLength: 3
-          example: [0,1,2]
-        cohortPacking:
-          description: if selected, will ensure that all like items will be packed together, in no more than [cohortMax] different groups within a single container.
-          type: boolean
-          default: false
-        cohortMax:
-          description: the maximum number of contiguous cohorts for a given item type within a single container. E.g., if you pack 40 chairs in a single container, a cohortMax of 2 could yield one (all 40 chairs in a single block if space is available) or two (say, 25 chairs in one corner and 15 in the other) contiguous cohorts.
-          default: 2
+      coordOrder:
+        description:
+          If placementStyle is set to "default", coordOrder sets the placement priority of axes ascendingly. "0,1,2" would search for placement points along the Z(length,"2"), then Y(width,"1"), and finally X(height"0"). Keep in mind that in the default rendering the "up" direction is X and the other axes follow the right-hand rule.
+
+          This is useful for different packing methods. E.g., Utilizing "2,0,1" would pack a shipping container first in the Y(width) direction, then in the X(height) direction, and finally in the Z(length) direction, replication a floor-to-ceiling, front-to-back loading method.
+        type: array
+        items:
           type: integer
-        allowableOverhang:
-          description: The amount an item can overhang lower items that it is placed upon. The units are whatever units the box and item dimensions are given in. By convention, inches.
-          default: -1.0
-          type: number
-        placementStyle:
-          description: How to place items. 'default' will defer to coordOrder, 'corner' minimizes distance to rear, bottom corner, 'wedge' minimizes distance to middle of bottom, back edge, 'mound' minimizes distance to center of carton bottom.
-          type: string
-          default: default
-          enum:
+        maxLength: 3
+        minLength: 3
+        example: [0, 1, 2]
+      cohortPacking:
+        description: if selected, will ensure that all like items will be packed together, in no more than [cohortMax] different groups within a single container. Not to be confused with `boxTypeChoiceLookback` constraints for reducing item spreading across containers and improving consolidation based on `sequence`.
+        type: boolean
+        default: false
+      cohortMax:
+        description: the maximum number of contiguous cohorts for a given item type within a single container. E.g., if you pack 40 chairs in a single container, a cohortMax of 2 could yield one (all 40 chairs in a single block if space is available) or two (say, 25 chairs in one corner and 15 in the other) contiguous cohorts.
+        default: 2
+        type: integer
+      allowableOverhang:
+        description: The amount an item can overhang lower items that it is placed upon. The units are whatever units the box and item dimensions are given in. By convention, inches.
+        default: -1.0
+        type: number
+      placementStyle:
+        description: How to place items. 'default' will defer to coordOrder, 'corner' minimizes distance to rear, bottom corner, 'wedge' minimizes distance to middle of bottom, back edge, 'mound' minimizes distance to center of carton bottom.
+        type: string
+        default: default
+        enum:
           - default
           - corner
           - wedge
           - mound
           - orb
-        itemSort:
-          description: Method to use to sort items for placement. Default is item volume descending. 'largest-box-needed' is by the volume of the smallest box type specified that will fit the item, descending, 'largest-girth' is 2*(width + height), descending, 'longest-dimension' is by longest single item dimension, descending, 'shortest-dimension' is by shortest single dimension, ascending, 'largest-cross-section' is by largest product of the two greatest dimensions, descending, 'set-volume' is by total 'itemSet' volume, descending. 'weight' is by weight, descending. 'density' is by item weight per unit volume, descending. It can often be worth attempting packs with competing itemSorts and picking the lowest cost option. 'all' uses all available item sorts, whereas 'combined' uses a recommended set of item sorts, both returning the lowest 'totalCost' option. 
-          type: string
-          default: combined
-          enum:
-            - default
-            - largest-box-needed
-            - largest-girth
-            - largest-length-plus-girth
-            - longest-dimension
-            - shortest-dimension
-            - largest-cross-section
-            - set-volume
-            - density
-            - weight
-            - combined
-            - all
-        itemSortReverse:
-          type: boolean
-          default: false
-          description: Whether or not to reverse the itemSort utilized.
-        itemSortDualDirection:
-          type: boolean
-          default: false
-          description: Whether or not to use both normal and reversed itemSorts.
-        itemInitialOrientationBestForBox:
-          type: boolean
-          default: false
-          description: For all items where orientation flipping is used, the orientation producing the highest multiple of items fit per remaining dimension is used as the first orientation. This option should be enabled when packing high quantities of single item types, but may produce inconsistent results in other cases. Defers to item orientation locking and itemOrientationSearchDepth > 0 if a superior result is found.
-        itemInitialOrientationPreferred:
-          type: boolean
-          default: true
-          description: Whether to attempt packing by either greedily placing items or placing all allowable combinations of initial item orientations and selecting the most performant. When true, items will be placed immediately using the orientation reflected by their dimensions definition and will only be flipped if a placement cannot be found and the item rules allow orientation changes. When false, all allowable initial orientation combinations will be attempted for each item in each box.
-        itemOrientationSearchDepth:
+      itemSort:
+        description: Method to use to sort items for placement. Default is item volume descending. 'largest-box-needed' is by the volume of the smallest box type specified that will fit the item, descending, 'largest-girth' is 2*(width + height), descending, 'longest-dimension' is by longest single item dimension, descending, 'shortest-dimension' is by shortest single dimension, ascending, 'largest-cross-section' is by largest product of the two greatest dimensions, descending, 'set-volume' is by total 'itemSet' volume, descending. 'weight' is by weight, descending. 'density' is by item weight per unit volume, descending. It can often be worth attempting packs with competing itemSorts and picking the lowest cost option. 'all' uses all available item sorts, whereas 'combined' uses a recommended set of item sorts, both returning the lowest 'totalCost' option.
+        type: string
+        default: combined
+        enum:
+          - default
+          - largest-box-needed
+          - largest-girth
+          - largest-length-plus-girth
+          - longest-dimension
+          - shortest-dimension
+          - largest-cross-section
+          - set-volume
+          - density
+          - weight
+          - combined
+          - all
+      itemSortReverse:
+        type: boolean
+        default: false
+        description: Whether or not to reverse the itemSort utilized.
+      itemSortDualDirection:
+        type: boolean
+        default: false
+        description: Whether or not to use both normal and reversed itemSorts.
+      itemInitialOrientationBestForBox:
+        type: boolean
+        default: false
+        description: For all items where orientation flipping is used, the orientation producing the highest multiple of items fit per remaining dimension is used as the first orientation. This option should be enabled when packing high quantities of single item types, but may produce inconsistent results in other cases. Defers to item orientation locking and itemOrientationSearchDepth > 0 if a superior result is found.
+      itemInitialOrientationPreferred:
+        type: boolean
+        default: true
+        description: Whether to attempt packing by either greedily placing items or placing all allowable combinations of initial item orientations and selecting the most performant. When true, items will be placed immediately using the orientation reflected by their dimensions definition and will only be flipped if a placement cannot be found and the item rules allow orientation changes. When false, all allowable initial orientation combinations will be attempted for each item in each box.
+      itemOrientationSearchDepth:
+        type: integer
+        default: 1
+        minimum: 0
+        maximum: 4
+        description: When itemInitialOrientationPreferred is set to false, the itemOrientationSearchDepth is the number of unique, sorted, groups of Items sharing the same ItemSet definition that will be have every combination of initial orientation attempted. A value of 1 signifies that only the first item (and others still unpacked from its ItemSet) will have every orientation attempted and the engine subsequently selecting the most performant. A value of 2 signifies that the first groups of unpacked items, each sharing an ItemSet, will have every combination of orientation attempted. Increasing this value from 1 can very rapidly result in excessive complexity and a timeout error instead of a result, so discretion is advised. Requesting a depth in excess of the maximum will return a warning and allow the request the complete with the setting reduced to its maximum.
+      sequenceSort:
+        type: boolean
+        description: Whether or not the items should be initially sorted by their sequence value instead of by the specified itemSort. This is not always useful, as the default "biggest-first" volume sort is very effective for items, and constraining by maxSequenceDistance is applied regardless of this field. That said, for doing custom pre-sorts such as weight-based instead of volume based, this value should be set to true.
+        default: false
+      sequenceHeatMap:
+        type: boolean
+        description: Colorize items solely by their sequence value, light when sequence is high, dark when it is low. Useful for indicating item bin location, weight, or other sequence property that may not be apparent from the default visualization.
+        default: false
+      maxSequenceDistance:
+        type: integer
+        description: This is the maximum distance allowable between two sequence values of items packed in a common box. E.g., "Distance" for an item sequence composed of aisle/bin combinations of "0401" and "1228" has a sequence distance of \|1228 - 401\| = 827
+      boxTypeChoiceStyle:
+        description: Defines how available boxTypes are selected when a new box must be created to pack additional items. The 'estimated' style uses 'usableSpace' to estimate how quickly each valid boxType will be filled by both weight and volume, and estimated cost is calculated. 'actual' attempts real placement of subsequent items in each available boxType and selects the one with the lowest actual cost. 'actual' is much slower than 'estimated', but will often return superior cost optimizations.
+        type: string
+        default: actual
+        enum:
+          - actual
+          - estimated
+      boxTypeChoiceLookahead:
+        description: <p>When selecting the next available boxType, we must consider how far to look ahead.</p><p>Consider we have 8 items of identical dimensions, and two flat rate boxTypes. It is found that Box A can fit 6 items, and costs $12. Box B can fit 4 items, and costs $10.</p><p>If we consider only the next box, i.e., 'boxTypeChoiceLookahead' set to 0, we would select Box A. It costs $2 per item, whereas Box B is $2.50 per item. Box A is opened, 6 items are placed inside, and now 2 remain. To pack the last 2, Box B would be selected, as 2 items for $10 is $5 per item, and Box A's $12 is $6 per item.</p><p>Alternatively, if 'boxTypeChoiceLookahead' is set to 1, the boxType that provides the lowest cost per item <i>including</i> the lookahead boxType(s) would be selected. In this case, we find we need 2 of Box B, for $20 total, to fit all 8 items, or $2.50 per item, and would need 1 of Box A and 1 of Box B if Box A is selected first, for $22 total or $2.75 per item. Box B would be used.</p><p>Please note that 'boxTypeChoiceLookahead', especially when combined with the 'actual' 'boxTypeChoiceStyle' can have significant performance impacts. 0 is recommended for real-time use cases.</p>
+        type: integer
+        default: 0
+      boxTypeChoiceLookback:
+        description: Control the ability for partially-filled boxes to allow packing of later-sorted items. When used with `sequence`, it can greatly reduce item set fragmentation across multiple containers and improve consolidation, sometimes at the expense of overall container count and volume utilization. A value of null or -1 means unlimited lookback is permitted, i.e., every box can be used to pack any allowable item that fits regardless of its pack sequence, and all boxes will remain "opened" or available for packing until the last item in the pack sequence is attempted. A value of 0 means lookback is not allowed, and as soon as the next item in the pack sequence does not fit into a partially filled box, that box is "closed" or locked and will not permit any additional items (i.e., out-of-sequence items) to be packed in it.
+        type: integer
+        default: -1
+      boxTypeChoiceGoal:
+        description: The objective to evaluate boxTypeChoices by. 'lowest-cost' minimizes price or volume cost of boxTypes selected, 'most-items' maximizes item count per box opened, i.e., fewest total boxes used.
+        type: string
+        default: lowest-cost
+        enum:
+          - lowest-cost
+          - most-items
+      boxesMax:
+        description: The maximum number of boxes to be used to pack the items in the request, potentially leaving items in 'leftovers' if there is insufficient space, determined by item 'sequence' or selected 'itemSort'. If existing 'boxes' are passed to the pack request, they count towards this total, but will not be excluded, allowing for situations where 'lenBoxes' may be greater than 'boxesMax'. However, no 'boxTypes' will be used to create additional boxes unless doing so would not exceed 'boxesMax'.
+        type: integer
+        default: 0
+      boxesPerItemSetMax:
+        description: The maximum number of boxes that a single ItemSet's member items (i.e., all that share the same refId) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit.
+        type: integer
+        default: 0
+      boxesPerSequenceMax:
+        description: The maximum number of boxes that a single non-empty sequence's member items (i.e., all that share the same non-empty sequence) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit.
+        type: integer
+        default: 0
+      itemsPerBoxMax:
+        description: The maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
+        type: integer
+        default: 0
+      itemSetsPerBoxMax:
+        description: The maximum quantity of unique 'item.refId' values that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
+        type: integer
+        default: 0
+      itemsInlineMax:
+        description: Limit the item count that can share a placement on a specific line parallel to the placement axis, e.g., '[1,2,1]' means items can be placed 1 high, 2 wide, and 1 deep within the box. A value of '0' is equivalent to no limit along that axis. Overridden by 'boxType' settings.
+        type: array
+        items:
           type: integer
-          default: 1
-          minimum: 0
-          maximum: 10
-          description: When itemInitialOrientationPreferred is set to false, the itemOrientationSearchDepth is the number of unique, sorted, groups of Items sharing the same ItemSet definition that will be have every combination of initial orientation attempted. A value of 1 signifies that only the first item (and others still unpacked from its ItemSet) will have every orientation attempted and the engine subsequently selecting the most performant. A value of 2 signifies that the first groups of unpacked items, each sharing an ItemSet, will have every combination of orientation attempted. Increasing this value from 1 can very rapidly result in excessive complexity and a timeout error instead of a result, so discretion is advised.
-        sequenceSort:
-          type: boolean
-          description: Whether or not the items should be initially sorted by their sequence value instead of by the specified itemSort. This is not always useful, as the default "biggest-first" volume sort is very effective for items, and constraining by maxSequenceDistance is applied regardless of this field. That said, for doing custom pre-sorts such as weight-based instead of volume based, this value should be set to true.
-          default: false
-        sequenceHeatMap:
-          type: boolean
-          description: Colorize items solely by their sequence value, light when sequence is high, dark when it is low. Useful for indicating item bin location, weight, or other sequence property that may not be apparent from the default visualization.
-          default: false
-        maxSequenceDistance:
-          type: integer
-          description: This is the maximum distance allowable between two sequence values of items packed in a common box. E.g., "Distance" for an item sequence composed of aisle/bin combinations of "0401" and "1228" has a sequence distance of \|1228 - 401\| = 827
-        boxTypeChoiceStyle:
-          description: Defines how available boxTypes are selected when a new box must be created to pack additional items. The 'estimated' style uses 'usableSpace' to estimate how quickly each valid boxType will be filled by both weight and volume, and estimated cost is calculated. 'actual' attempts real placement of subsequent items in each available boxType and selects the one with the lowest actual cost. 'actual' is much slower than 'estimated', but will often return superior cost optimizations.
-          type: string
-          default: actual
-          enum:
-            - actual
-            - estimated
-        boxTypeChoiceLookahead:
-          description: <p>When selecting the next available boxType, we must consider how far to look ahead.</p><p>Consider we have 8 items of identical dimensions, and two flat rate boxTypes. It is found that Box A can fit 6 items, and costs $12. Box B can fit 4 items, and costs $10.</p><p>If we consider only the next box, i.e., 'boxTypeChoiceLookahead' set to 0, we would select Box A. It costs $2 per item, whereas Box B is $2.50 per item. Box A is opened, 6 items are placed inside, and now 2 remain. To pack the last 2, Box B would be selected, as 2 items for $10 is $5 per item, and Box A's $12 is $6 per item.</p><p>Alternatively, if 'boxTypeChoiceLookahead' is set to 1, the boxType that provides the lowest cost per item <i>including</i> the lookahead boxType(s) would be selected. In this case, we find we need 2 of Box B, for $20 total, to fit all 8 items, or $2.50 per item, and would need 1 of Box A and 1 of Box B if Box A is selected first, for $22 total or $2.75 per item. Box B would be used.</p><p>Please note that 'boxTypeChoiceLookahead', especially when combined with the 'actual' 'boxTypeChoiceStyle' can have significant performance impacts. 0 is recommended for real-time use cases.</p>
-          type: integer
-          default: 0
-        boxTypeChoiceLookback:
-          description: Control the ability for partially-filled boxes to allow packing of later-sorted items. A value of null or -1 means unlimited lookback is permitted, i.e., every box can be used to pack any allowable item that fits regardless of its pack sequence, and all boxes will remain "opened" or available for packing until the last item in the pack sequence is attempted. A value of 0 means lookback is not allowed, and as soon as the next item in the pack sequence does not fit into a partially filled box, that box is "closed" or locked and will not permit any additional items (i.e., out-of-sequence items) to be packed in it.
-          type: integer
-          default: -1
-        boxTypeChoiceGoal:
-          description: The objective to evaluate boxTypeChoices by. 'lowest-cost' minimizes price or volume cost of boxTypes selected, 'most-items' maximizes item count per box opened, i.e., fewest total boxes used.
-          type: string
-          default: lowest-cost
-          enum:
-            - lowest-cost
-            - most-items
-        boxesMax:
-          description: The maximum number of boxes to be used to pack the items in the request, potentially leaving items in 'leftovers' if there is insufficient space, determined by item 'sequence' or selected 'itemSort'. If existing 'boxes' are passed to the pack request, they count towards this total, but will not be excluded, allowing for situations where 'lenBoxes' may be greater than 'boxesMax'. However, no 'boxTypes' will be used to create additional boxes unless doing so would not exceed 'boxesMax'.
-          type: integer
-          default: 0
-        boxesPerItemSetMax:
-          description: The maximum number of boxes that a single ItemSet's member items (i.e., all that share the same refId) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit.
-          type: integer
-          default: 0
-        boxesPerSequenceMax:
-          description: The maximum number of boxes that a single non-empty sequence's member items (i.e., all that share the same non-empty sequence) can be spread across. Any items that do not fit within this number of boxes will be precluded from packing and returned in the leftovers array. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit.
-          type: integer
-          default: 0
-        itemsPerBoxMax:
-          description: The maximum quantity of discrete items that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
-          type: integer
-          default: 0
-        itemSetsPerBoxMax:
-          description: The maximum quantity of unique 'item.refId' values that a single box can contain. The default setting of 0, a negative number, and null are all equivalent and indicate no maximum limit, optionally overridden by 'boxType' settings.
-          type: integer
-          default: 0
-        itemsInlineMax:
-          description: Limit the item count that can share a placement on a specific line parallel to the placement axis, e.g., '[1,2,1]' means items can be placed 1 high, 2 wide, and 1 deep within the box. A value of '0' is equivalent to no limit along that axis. Overridden by 'boxType' settings.
-          type: array
-          items:
-            type: integer
-          maxLength: 3
-          minLength: 3
-          example: [1,2,1]
-        generatedBoxTypesMax:
-          description: The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit. `64` is a sensible value.
-          type: integer
-          default: 0
-          example: 64
-        valueTiebreaker:
-          description: The tiebreaker to use in the event to box type choices are otherwise completely equal. Default is "volume", alternative is "weight".
-          type: string
-          default: volume
-          enum:
-            - volume
-            - weight
-        timeout:
-          description: Optional timeout for request computation, will be reduced to endpoint maximum if in excess of published timeout.
-          type: number
-          example: 30
+        maxLength: 3
+        minLength: 3
+        example: [1, 2, 1]
+      generatedBoxTypesMax:
+        description: The maximum number of generated box sizes to randomly sampled when generating box types. Default of 0 is unlimited, and in some cases may never return without a limit. `64` is a sensible value.
+        type: integer
+        default: 0
+        example: 64
+      valueTiebreaker:
+        description: The tiebreaker to use in the event to box type choices are otherwise completely equal. Default is "volume", alternative is "weight".
+        type: string
+        default: volume
+        enum:
+          - volume
+          - weight
+      timeout:
+        description: Optional timeout for request computation, will be reduced to endpoint maximum if in excess of published timeout.
+        type: number
+        example: 30
   BoxProperties:
     type: object
     properties:
@@ -545,10 +547,10 @@ definitions:
         type: number
         description: maximum allowable gross weight for the box, i.e., all packed item weights plus the weightTare.
         minimum: 0
-      dimensions: 
+      dimensions:
         description: the [height,length,width] of the box.
         allOf:
-        - $ref: "#/definitions/Point"
+          - $ref: '#/definitions/Point'
       outer:
         description: if required, data describing the outer dimensions of the box.
         type: object
@@ -556,20 +558,20 @@ definitions:
           dimensions:
             description: on return, if an outer `dimensionChange` was specified, the final dimensions of the box.
             allOf:
-            - $ref: "#/definitions/Point"
+              - $ref: '#/definitions/Point'
           dimensionChange:
             description: Outers must be specified as the difference of each dimension from the inner dimensions. E.g., an inner `x` of `10` with an outer `dimensionChange.x` of `0.25` would result in an `outer.dimensions.x` of `10.25`. Outers are only used for informational purposes, and for `pack-sequence` rule operations when using the `boxes-to-items` `reduce` method (to add outer dimensions to inner boxes when they are packed in later steps.)
             allOf:
-            - $ref: "#/definitions/Point"
+              - $ref: '#/definitions/Point'
       outerBasedCost:
         description: If `true`, will base `dimensionalWeight` and any price component thresholds upon the outer dimensions, not the inner packable dimensions.
         type: boolean
         default: false
         required: false
-      centerOfMass: 
+      centerOfMass:
         description: the coordinates of the center of mass of the box.
         allOf:
-        - $ref: "#/definitions/Point"
+          - $ref: '#/definitions/Point'
       reservedSpace:
         description: space in boxes that is reserved, i.e., for packing material, overriding top-level 'reservedSpace'.
         minimum: 0
@@ -592,11 +594,11 @@ definitions:
           type: integer
         maxLength: 3
         minLength: 3
-        example: [1,2,1]
+        example: [1, 2, 1]
       rateTable:
         description: An optional rate table definition for improved carton selection and pricing optimization. Defaults are included using retail rates for FedEx and UPS if carrier and service is provided, but optimization can be improved with more data passed in a carton's specific rate table. Methods are <ol><li>Provide carrier, service, and zone.</li><li>Provide all acceptable weights and prices to use for the carton, similar to actual carrier rate tables.</li><li>Provide the coefficients required for a simple linear weight-dependent pricing model.</li></ol>
         allOf:
-        - $ref: "#/definitions/RateTable"
+          - $ref: '#/definitions/RateTable'
       propertyConstraints:
         description: In order to add arbitrary constraints for certain items based not upon weight or physical dimensions, a `propertyConstraint` can be added here for each additional numerical constraint desired. E.g., limiting the weight of a restricted component of an item to 5 lbs per box, while still allowing total item weight of, e.g., 50 lbs per box. All numeric properties are treated as unit amounts and summed individually (not at the `ItemSet` level).
         type: array
@@ -618,13 +620,13 @@ definitions:
               default: 0
               type: number
     required:
-    - weightMax
-    - dimensions
+      - weightMax
+      - dimensions
   BoxType:
     description: box types to be used for packing.
     example:
       name: Example Box
-      dimensions: 
+      dimensions:
         x: 7.5
         y: 12
         z: 16
@@ -632,15 +634,12 @@ definitions:
       weightTare: 0.5
       price: 125
     allOf:
-    - $ref: "#/definitions/BoxProperties"
+      - $ref: '#/definitions/BoxProperties'
   BoxTypeSet:
-    description: "box type sets for useful defaults."
+    description: 'box type sets for convenient demo defaults.'
     type: string
     enum:
-    - usps
-    - fedex
-    - pallet
-    - customer
+      - customer
   BoxTypeGenerator:
     description: A generator of box types, specifying bounds of acceptable box types and defining dynamic cost characteristics.
     type: object
@@ -648,51 +647,51 @@ definitions:
       boxTypeDefaults:
         description: default attributes for all generated "boxTypes"
         allOf:
-        - $ref: "#/definitions/BoxProperties"
+          - $ref: '#/definitions/BoxProperties'
       operation:
         type: string
         description: Type of generator to use. "cartesian" requires axis list and range "options" fields in order to discover acceptable carton sizes, whereas "pack-as-is" generates a box for each item (optionally selected by an itemMatch "exclude" rule to capture only items able to be shipped as is) and includes default or custom rate and pricing information on the as-is packaging to adequately weight the decision between overboxing (potentially with other items) or shipping alone. Compare with the "pack-as-is" rule, which will strictly pass through an item as an output box, and will not evaluate whether to overbox. E.g., a "price" of -1 can be set in the "boxTypeDefaults" object for a "pack-as-is" generator in order to incentivize a pack-as-is versus an overbox the smallest meaningful amount.
         required: true
         enum:
-        - cartesian
-        - pack-as-is
+          - cartesian
+          - pack-as-is
       options:
         type: object
         properties:
           xList:
             description: list of available x-axis lengths
             allOf:
-              - $ref: "#/definitions/GeneratorAxisList"
+              - $ref: '#/definitions/GeneratorAxisList'
           xRange:
             description: range of available x-axis lengths
             allOf:
-              - $ref: "#/definitions/GeneratorAxisRange"
+              - $ref: '#/definitions/GeneratorAxisRange'
           yList:
             description: list of available y-axis lengths
             allOf:
-              - $ref: "#/definitions/GeneratorAxisList"
+              - $ref: '#/definitions/GeneratorAxisList'
           yRange:
             description: range of available y-axis lengths
             allOf:
-              - $ref: "#/definitions/GeneratorAxisRange"
+              - $ref: '#/definitions/GeneratorAxisRange'
           zList:
             description: list of available z-axis lengths
             allOf:
-              - $ref: "#/definitions/GeneratorAxisList"
+              - $ref: '#/definitions/GeneratorAxisList'
           zRange:
             description: range of available z-axis lengths
             allOf:
-              - $ref: "#/definitions/GeneratorAxisRange"
+              - $ref: '#/definitions/GeneratorAxisRange'
           limits:
             description: list of GeneratorLimit objects defining the bounds of generated box sizes.
             type: array
             items:
-              $ref: "#/definitions/GeneratorLimit"
+              $ref: '#/definitions/GeneratorLimit'
           priceComponents:
             description: list of GeneratorPriceComponents defining the dynamic price behaviors of generated box sizes.
             type: array
             items:
-              $ref: "#/definitions/GeneratorPriceComponent"
+              $ref: '#/definitions/GeneratorPriceComponent'
           noTrimToMaxExtent:
             description: if unset or false, the generator will reduce its dimensions to the maximum of the max extent of items placed within it or the minimum specified limit along each axis containing a GeneratorAxisRange object; if true, the generator will not reduce its dimensions along any axis; trimming to max extent is ignored on all axes with only GeneratorAxisList objects, as to respect specified box footprints. By default, rounds up trimmed dimensions to the nearest tenths unit of length.
   GeneratorAxisList:
@@ -704,29 +703,29 @@ definitions:
     description: configurable range of possible lengths for given axis.
     type: object
     properties:
-      min: 
+      min:
         type: number
         description: the minimum possible axis length to generate
-      max: 
+      max:
         type: number
         description: the maximum possible axis length to generate
-      deriveFromItems: 
+      deriveFromItems:
         description: if true, intelligently select possible axis lengths based upon item dimensions.
         type: boolean
         default: false
-      fitForFirstItem: 
-        description: if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and increment. 
+      fitForFirstItem:
+        description: if true, select axis length based upon first item placed in each generated box, overriding deriveFromItems and increment.
         type: boolean
         default: false
       increment:
         description: if `deriveFromItems` is not true, the desired increment for box dimension rounding. E.g., `0.25` for a box in inches would round up to the quarter inch. `10` would round to the next even 10s digit. Note that `min` and `max` are included as is, and are not rounded to the nearest `increment`. So, `min 5, max 59, increment 10` could produce any of `[5,10,20,30,40,50,59]` for this `GeneratorAxisRange`. Also note that small `increment` values would benefit from a `generatedBoxTypesMax` set.
         type: number
   GeneratorLimit:
-    description: "A generator limit for a given calculated box size metric. NB: use a `GeneratorAxisList` when explicitly setting footprints if you want any two dimensions to be equal to each other. Using dynamic `-ratio` based limits with a `max` of 1.0 for, e.g, `longest-to-middle-ratio` will often result in no allowable boxes being generated."
+    description: 'A generator limit for a given calculated box size metric. NB: use a `GeneratorAxisList` when explicitly setting footprints if you want any two dimensions to be equal to each other. Using dynamic `-ratio` based limits with a `max` of 1.0 for, e.g, `longest-to-middle-ratio` will often result in no allowable boxes being generated.'
     type: object
     properties:
       metric:
-        $ref: "#/definitions/Metric"
+        $ref: '#/definitions/Metric'
       min:
         description: minimum allowable value of calculated metric
         type: number
@@ -742,139 +741,139 @@ definitions:
         required: true
         description: key for a given price component, allowing for multiple metrics to calculate the same value, in which case the maximum price will be selected.
       metric:
-        $ref: "#/definitions/Metric"
+        $ref: '#/definitions/Metric'
       # limit: allow a limit of times to stack
-      aggregator: 
+      aggregator:
         description: how to aggregate `priceComponents` with common `key` values. `max` selects the largest threshold price across all `priceComponents` sharing a `key`. `product` takes the last (i.e., highest) matching threshold price from each `priceComponent` sharing a `key` and multiplies them together. `sum` simply sums all prices from all matching thresholds across all `priceComponents` sharing the same key. NB all `priceComponents` sharing a `key` must share the same `aggregator` to have predictable behavior.
         type: string
         default: max
         required: false
         enum:
-        - max
-        - product
-        - sum
+          - max
+          - product
+          - sum
       thresholds:
         description: list of number thresholds of corresponding metric above which corresponding prices are triggered. Note that thresholds are traversed in reverse in cases where order matters (e.g., when using the `product` aggregator)
         type: array
-        items: 
+        items:
           type: number
       prices:
         description: list of integer price values to assign when corresponding thresholds are exceeded
         type: array
-        items: 
+        items:
           type: integer
   Metric:
     description: A named calculation for a specific value derived from a cuboid (e.g., an item or a box)
     type: string
     enum:
-    - volume
-    - surface-area
-    - surface-area-rsc
-    - longest-dimension
-    - middle-dimension
-    - shortest-dimension                                                   
-    - length-plus-girth
-    - girth
-    - x-dimension
-    - y-dimension
-    - z-dimension
-    - longest-to-middle-ratio
-    - longest-to-shortest-ratio
-    - middle-to-shortest-ratio
-    - z-to-y-ratio
-    - z-to-x-ratio
-    - y-to-x-ratio
+      - volume
+      - surface-area
+      - surface-area-rsc
+      - longest-dimension
+      - middle-dimension
+      - shortest-dimension
+      - length-plus-girth
+      - girth
+      - x-dimension
+      - y-dimension
+      - z-dimension
+      - longest-to-middle-ratio
+      - longest-to-shortest-ratio
+      - middle-to-shortest-ratio
+      - z-to-y-ratio
+      - z-to-x-ratio
+      - y-to-x-ratio
   Box:
     description: A completed, packed box.
     allOf:
-    - $ref: "#/definitions/BoxProperties"
-    - type: object
-      properties:
-        id: 
-          type: integer
-        subspace:
-          $ref: "#/definitions/Subspace"
-        boxType:
-          $ref: "#/definitions/BoxType"
-        items: 
-          title: items
-          type: array
-          items:
-            type: object
-            properties:
-              item:
-                $ref: "#/definitions/Item"
-        volumeMax:
-          type: number
-          description: total volume of the box.
-          minimum: 0
-        volumeUsed:
-          type: number
-          description: utilized volume of the box, i.e., item volume plus reserved volume.
-          minimum: 0
-        volumeNet:
-          type: number
-          description: volume of box utilized solely by packed items.
-          minimum: 0
-        volumeRemaining:
-          type: number
-          description: remaining volume of the box.
-          minimum: 0
-        volumeReserved:
-          type: number
-          description: reserved volume of the box, i.e., void fill.
-          minimum: 0
-        volumeUtilization:
-          type: number
-          minimum: 0
-          maximum: 1
-          description: percentage of volume utilized by packed items.
-        weightUsed: 
-          type: number
-          description: utilized weight of the box.
-          minimum: 0
-        weightNet:
-          type: number
-          description: total weight of box's contents, not including the box's empty (tare) weight.
-          minimum: 0
-        weightRemaining:
-          type: number
-          description: remaining weight of the box.
-          minimum: 0
-        weightUtilization:
-          type: number
-          description: percentage of weight utilized by packed items.
-          minimum: 0
-          maximum: 1
-        dimensionalWeight:
-          type: number
-          description: the calculated dimensional weight of this box, if applicable.
-        dimensionalWeightUsed:
-          type: boolean
-          description: whether or not dimensional weight was used for this box.
-        lenItems:
-          description: cardinality of all non-virtual items packed in this box and in any dependent subspaces it contains
-          type: integer
-        lenUnits:
-          description: cardinality of distinct units of items (count of cases, eaches, etc.)
-          type: integer
-        svg:
-          type: string
-          description: raw svg of visualization.
-        centerOfMassString:
-          type: string
-          description: string representation of box center of mass.
-        depthOrder:
-          type: array
-          description: <p>sorted list of 'item.index' values representing the ordering utilized by the render, back to front.</p><p>This list works in tandem with the 'eye' point, and can represent a potentially feasible real-world packing order.</p><p>E.g., if the 'eye' is set to '{x:1, y:0, z:0}', then the packing image will show a top-down view of the carton, and 'depthOrder' will contain the order to place items so that all items on the bottom of the carton are packed first, then those in the next layer, etc., so that no item is placed beneath another already placed item.</p><p>Conversely, if the 'eye' is set to '{x:0, y:0, z:1}', the packing image will show an end-on view--as if from the doors of a shipping trailer, and 'depthOrder' will contain the order to place items so that all items farthest from the doors are placed before items directly in front of them.</p>
-          items:
+      - $ref: '#/definitions/BoxProperties'
+      - type: object
+        properties:
+          id:
             type: integer
-        depthOrderString:
-          type: string
-          description: string representation of depth ordering.
+          subspace:
+            $ref: '#/definitions/Subspace'
+          boxType:
+            $ref: '#/definitions/BoxType'
+          items:
+            title: items
+            type: array
+            items:
+              type: object
+              properties:
+                item:
+                  $ref: '#/definitions/Item'
+          volumeMax:
+            type: number
+            description: total volume of the box.
+            minimum: 0
+          volumeUsed:
+            type: number
+            description: utilized volume of the box, i.e., item volume plus reserved volume.
+            minimum: 0
+          volumeNet:
+            type: number
+            description: volume of box utilized solely by packed items.
+            minimum: 0
+          volumeRemaining:
+            type: number
+            description: remaining volume of the box.
+            minimum: 0
+          volumeReserved:
+            type: number
+            description: reserved volume of the box, i.e., void fill.
+            minimum: 0
+          volumeUtilization:
+            type: number
+            minimum: 0
+            maximum: 1
+            description: percentage of volume utilized by packed items.
+          weightUsed:
+            type: number
+            description: utilized weight of the box.
+            minimum: 0
+          weightNet:
+            type: number
+            description: total weight of box's contents, not including the box's empty (tare) weight.
+            minimum: 0
+          weightRemaining:
+            type: number
+            description: remaining weight of the box.
+            minimum: 0
+          weightUtilization:
+            type: number
+            description: percentage of weight utilized by packed items.
+            minimum: 0
+            maximum: 1
+          dimensionalWeight:
+            type: number
+            description: the calculated dimensional weight of this box, if applicable.
+          dimensionalWeightUsed:
+            type: boolean
+            description: whether or not dimensional weight was used for this box.
+          lenItems:
+            description: cardinality of all non-virtual items packed in this box and in any dependent subspaces it contains
+            type: integer
+          lenUnits:
+            description: cardinality of distinct units of items (count of cases, eaches, etc.)
+            type: integer
+          svg:
+            type: string
+            description: raw svg of visualization.
+          centerOfMassString:
+            type: string
+            description: string representation of box center of mass.
+          depthOrder:
+            type: array
+            description: <p>sorted list of 'item.index' values representing the ordering utilized by the render, back to front.</p><p>This list works in tandem with the 'eye' point, and can represent a potentially feasible real-world packing order.</p><p>E.g., if the 'eye' is set to '{x:1, y:0, z:0}', then the packing image will show a top-down view of the carton, and 'depthOrder' will contain the order to place items so that all items on the bottom of the carton are packed first, then those in the next layer, etc., so that no item is placed beneath another already placed item.</p><p>Conversely, if the 'eye' is set to '{x:0, y:0, z:1}', the packing image will show an end-on view--as if from the doors of a shipping trailer, and 'depthOrder' will contain the order to place items so that all items farthest from the doors are placed before items directly in front of them.</p>
+            items:
+              type: integer
+          depthOrderString:
+            type: string
+            description: string representation of depth ordering.
   ItemProperties:
     type: object
-    description: "general properties of an item"
+    description: 'general properties of an item'
     properties:
       refId:
         type: integer
@@ -891,30 +890,32 @@ definitions:
       sequence:
         type: string
         description: A sequence value for the item. This is intended for aisle-bin locations, e.g., aisle 11 bin 20 can be '1120'. Combined with maxSequenceDistance, you can restrict cartons to only have contents from within a certain range. This is very helpful for cartonization when picking efficiency is paramount. Sequence can also be used to pre-sort items for efficient packing on any arbitrary number, such as item weight instead of the default item volume.
-      dimensions: 
+      dimensions:
         description: the length, width, and height of the item.
         allOf:
-        - $ref: "#/definitions/Point"
-      centerOfMass: 
+          - $ref: '#/definitions/Point'
+      centerOfMass:
         description: the coordinates of the center of mass of the item.
         allOf:
-        - $ref: "#/definitions/Point"
+          - $ref: '#/definitions/Point'
       virtual:
         type: boolean
         default: false
         description: whether or not this is a real item or a virtual, blocking space (from a subspace or loading rules)
       properties:
         type: object
-        description: 'Additional properties to track per unit, which are all returned in the response. 
-        Numerical properties can be used in conjunction with box type `propertyConstraints` to control packing (very much akin to weight constraints). 
+        description: |
+          Additional properties to track per unit, which are all returned in the response. 
+          Numerical properties can be used in conjunction with box type `propertyConstraints` to control packing (very much akin to weight constraints). 
 
-        E.g., an item property on a Faberge egg of `"priceless-egg-quantity": 1` with a matching constraint of `"key": "priceless-egg-quantity", "max": 2, "aggregate": "sum"` would limit to 2 Faberge eggs per box.
-        
-        Another box constraint with `"key": "priceless-egg-quantity", "max": 0` instead would effectively prohibit any items with that quantity from packing in it, similar to an exclude rule. 
+          E.g., an item property on a Faberge egg of `"priceless-egg-quantity": 1` with a matching constraint of `"key": "priceless-egg-quantity", "max": 2, "aggregate": "sum"` would limit to 2 Faberge eggs per box.
 
-        Conversely, each egg could have its own insurance amount, and there may be a maximum allowable amount per box, such as `"priceless-egg-value": 33000000` for one and `"priceless-egg-value": 22000000` for a second (for $55 million total) with a corresponding constraint of `"key": "priceless-egg-value", "max": 50000000` would prevent both eggs from being placed in one box, as $55 million exceeds the $50 million constraint on a single box (and they would be placed in their own boxes insured for $33 million and $22 million respectively'
-        additionalProperties: true
-          # type: 
+          Another box constraint with `"key": "priceless-egg-quantity", "max": 0` instead would effectively prohibit any items with that quantity from packing in it, similar to an exclude rule. 
+
+          Conversely, each egg could have its own insurance amount, and there may be a maximum allowable amount per box, such as `"priceless-egg-value": 33000000` for one and `"priceless-egg-value": 22000000` for a second (for $55 million total) with a corresponding constraint of `"key": "priceless-egg-value", "max": 50000000` would prevent both eggs from being placed in one box, as $55 million exceeds the $50 million constraint on a single box (and they would be placed in their own boxes insured for $33 million and $22 million respectively'
+        additionalProperties:
+          true
+          # type:
           # - number
           # - string
           # - object
@@ -922,91 +923,91 @@ definitions:
           included-ice-lbs: 0.5
           restricted-qty: 0.1
           item-line-id: 1234-59581ABC-CAFE1909
-          wms-fields: 
+          wms-fields:
             InternalItemID: 1398401
             SKU: 049831
             Location: 40-8012
             Kit: false
-            OtherGenericProperties: "will be passed through and returned on the item."
+            OtherGenericProperties: 'will be passed through and returned on the item.'
     required:
-    - weight
-    - dimensions
+      - weight
+      - dimensions
   Item:
     description: a specific, packed item.
-    allOf: 
-    - $ref: "#/definitions/ItemProperties"
-    - type: object
-      properties:
-        index:
-          type: integer
-          description: the item index referring to this instance, used by `data-volume-index` in the returned SVG data, `depthOrder`, `parentItemIndex`, etc.; may appear non-sequential as "virtual" display volumes are also given index values to permit SVG targeting.
-        globalId:
-          type: integer
-          description: the internal packer global index assigned to this instance based upon packer item instantiation order.
-        packedIndex:
-          type: integer
-          description: this item's packing index, i.e., its position within the best-performing item sort.
-        message:
-          type: string
-          description: any relevant information or warnings about the packing of the item.
-        origin:
-          description: the [x,y,z] placement point of the back-bottom corner of the item.
-          allOf:
-          - $ref: "#/definitions/Point"
-        deltaCost:
-          type: integer
-          description: the change in the estimated final cost of the box caused by adding the item.
-        uniqueId:
-          type: string
-          description: a combination of the item's refId and its packing sequence, uniquely identifying it.
-        groupPackParent:
-          type: string
-          required: false
-          description: if specified, the uniqueId of the group-pack parent item this item belongs to.
-        quantity:
-          type: integer
-          description: quantity of basis item, i.e., eaches, this item represents, if dimensionSets were used with variable quantity contents.
-          default: 1
-        unitOfMeasure:
-          type: string
-          description: unit of measure, if specified. not defined or null if none.
-        dimensionSet:
-          description: the "dimensionSet" used for this specific item object.
-          allOf:
-          - $ref: "#/definitions/DimensionSet"
+    allOf:
+      - $ref: '#/definitions/ItemProperties'
+      - type: object
+        properties:
+          index:
+            type: integer
+            description: the item index referring to this instance, used by `data-volume-index` in the returned SVG data, `depthOrder`, `parentItemIndex`, etc.; may appear non-sequential as "virtual" display volumes are also given index values to permit SVG targeting.
+          globalId:
+            type: integer
+            description: the internal packer global index assigned to this instance based upon packer item instantiation order.
+          packedIndex:
+            type: integer
+            description: this item's packing index, i.e., its position within the best-performing item sort.
+          message:
+            type: string
+            description: any relevant information or warnings about the packing of the item.
+          origin:
+            description: the [x,y,z] placement point of the back-bottom corner of the item.
+            allOf:
+              - $ref: '#/definitions/Point'
+          deltaCost:
+            type: integer
+            description: the change in the estimated final cost of the box caused by adding the item.
+          uniqueId:
+            type: string
+            description: a combination of the item's refId and its packing sequence, uniquely identifying it.
+          groupPackParent:
+            type: string
+            required: false
+            description: if specified, the uniqueId of the group-pack parent item this item belongs to.
+          quantity:
+            type: integer
+            description: quantity of basis item, i.e., eaches, this item represents, if dimensionSets were used with variable quantity contents.
+            default: 1
+          unitOfMeasure:
+            type: string
+            description: unit of measure, if specified. not defined or null if none.
+          dimensionSet:
+            description: the "dimensionSet" used for this specific item object.
+            allOf:
+              - $ref: '#/definitions/DimensionSet'
   ItemSet:
     description: set of items sharing a common type.
     required:
-    - quantity
+      - quantity
     allOf:
-    - $ref: "#/definitions/ItemProperties"
-    - type: object
-      properties:
-        quantity:
-          type: integer
-          description: "quantity of items of this type in this item set"
-        dimensionSets:
-          type: array
-          description: Alternate list of dimensions for automatic conversion of items into larger units of measure (optional). The first element is assumed to be "each", and will use the base "dimensions" and "weight" if none is provided. Additional units of measure are preferentially selected in reverse, from the last dimensionSet to the first. If the "quantityDivisor" value is less than the quantity of the itemSet, then the weight and dimensions are either automatically multiplied (with "axisMultipliers") or explicitly set with "dimensions" and "weight". The remaining item "quantity" is reduced by "quantityDivisor" as many times as possible, with remainders being filled by subordinate units of measure, with eaches being preserved last. Units are counted towards "lenUnits", whereas total item quantity counts towards "lenItems". NB, "alternate-dimensions" and "group-pack" should not be used with "dimensionSets" as they may cause unexpected results.
-          items:
-            $ref: "#/definitions/DimensionSet"
+      - $ref: '#/definitions/ItemProperties'
+      - type: object
+        properties:
+          quantity:
+            type: integer
+            description: 'quantity of items of this type in this item set'
+          dimensionSets:
+            type: array
+            description: Alternate list of dimensions for automatic conversion of items into larger units of measure (optional). The first element is assumed to be "each", and will use the base "dimensions" and "weight" if none is provided. Additional units of measure are preferentially selected in reverse, from the last dimensionSet to the first. If the "quantityDivisor" value is less than the quantity of the itemSet, then the weight and dimensions are either automatically multiplied (with "axisMultipliers") or explicitly set with "dimensions" and "weight". The remaining item "quantity" is reduced by "quantityDivisor" as many times as possible, with remainders being filled by subordinate units of measure, with eaches being preserved last. Units are counted towards "lenUnits", whereas total item quantity counts towards "lenItems". NB, "alternate-dimensions" and "group-pack" should not be used with "dimensionSets" as they may cause unexpected results.
+            items:
+              $ref: '#/definitions/DimensionSet'
   DimensionSet:
-    description: A set of dimensions for a specific item unit of measure, to be assembled in an ordered, hierarchical list of DimensionSets, each representing a whole quantity of the item. Use "dimensions", "weight", and "quantityDivisor" properties when measurements are known (e.g., 8-count case outer "dimensions" with "weight" including the empty case weight, with 8 as the "quantityDivisor"), or "axisMultipliers" when trying to pack in known multiples of the base item dimensions (or when it is unknown), e.g., a 6-pack of soda would be `"axisMultipliers":{"x":1,"y":2,"z":3}` for a 1-high by 2-wide by 3-long arrangement. All dimension sets will be used if sufficient quantities exist without regard for available container size or rules, e.g., do not pass "pallet" for a small parcel shipment. 
+    description: A set of dimensions for a specific item unit of measure, to be assembled in an ordered, hierarchical list of DimensionSets, each representing a whole quantity of the item. Use "dimensions", "weight", and "quantityDivisor" properties when measurements are known (e.g., 8-count case outer "dimensions" with "weight" including the empty case weight, with 8 as the "quantityDivisor"), or "axisMultipliers" when trying to pack in known multiples of the base item dimensions (or when it is unknown), e.g., a 6-pack of soda would be `"axisMultipliers":{"x":1,"y":2,"z":3}` for a 1-high by 2-wide by 3-long arrangement. All dimension sets will be used if sufficient quantities exist without regard for available container size or rules, e.g., do not pass "pallet" for a small parcel shipment.
     title: DimensionSet
     type: object
     properties:
-      dimensions: 
+      dimensions:
         description: Dimensions of the item in this configuration
         required: false
         allOf:
-        - $ref: "#/definitions/Point"
+          - $ref: '#/definitions/Point'
       axisMultipliers:
         description: Multiples in x, y, and z directions of the item in this configuration. E.g., x:1, y:2, z:3 for a 3x2 6 pack of soda. If unspecified, "quantityDivisor" will default to the product of all 3 multiples. It it always relative to the basis dimensions of the item, i.e., each dimensions.
         required: false
         allOf:
-        - $ref: "#/definitions/Point"
+          - $ref: '#/definitions/Point'
       quantityDivisor:
-        description: The quantity of the item contained in this configuration, i.e., in pieces or eaches. 
+        description: The quantity of the item contained in this configuration, i.e., in pieces or eaches.
         type: integer
         required: false
       weight:
@@ -1017,9 +1018,31 @@ definitions:
         description: A string used to name or label the unit of measure. The first DimensionSet will always default to "each" unless otherwise specified.
         type: string
         required: false
+  BoxMatch:
+    type: object
+    description: Specify the boxes a rule applies to based upon a search substring of a `boxType` property. Both 'expression' and 'property' must be set.
+    title: BoxMatch
+    properties:
+      property:
+        description: the boxType property to search with the expression.
+        type: string
+        enum:
+          - name
+      expression:
+        description: the query string to search the specified boxType property for.
+        type: string
+      expressions:
+        description: query strings to search the specified boxType property for.
+        type: array
+        items:
+          type: string
+      negate:
+        description: if true, negate substring search so rule applies only to boxType properties not matching expression.
+        type: boolean
+        default: false
   ItemMatch:
     type: object
-    description: Specify the items a rule applies to based upon a search substring of an itemSet property. Either 'all' must be set to true or both 'expression' and 'property' must be set. 
+    description: Specify the items a rule applies to based upon a search substring of an itemSet property. Either 'all' must be set to true or both 'expression' and 'property' must be set.
     title: ItemMatch
     properties:
       all:
@@ -1029,8 +1052,8 @@ definitions:
         description: the itemSet property to search with the expression.
         type: string
         enum:
-        - sequence
-        - name
+          - sequence
+          - name
       expression:
         description: the query string to search the specified itemSet property for.
         type: string
@@ -1044,7 +1067,7 @@ definitions:
         type: boolean
         default: false
   Rule:
-    description: "Rule definition for packing constraints."
+    description: 'Rule definition for packing constraints.'
     type: object
     properties:
       itemRefId:
@@ -1053,10 +1076,10 @@ definitions:
       itemSequence:
         type: string
         description: sequence string shared by all items for the rule to apply to.
-      itemMatch: 
+      itemMatch:
         description: optional object defining a substring search and property to search for items the rule applies to
         allOf:
-        - $ref: "#/definitions/ItemMatch"
+          - $ref: '#/definitions/ItemMatch'
       targetItemRefIds:
         description: target item reference IDs that the rule applies to.
         type: array
@@ -1067,6 +1090,14 @@ definitions:
         type: array
         items:
           type: string
+      targetItemMatch:
+        description: optional object defining a substring search and property to search for target items the rule applies to
+        allOf:
+          - $ref: '#/definitions/ItemMatch'
+      targetBoxMatch:
+        description: optional object defining a substring search and property to search for target boxes the rule applies to
+        allOf:
+          - $ref: '#/definitions/BoxMatch'
       targetBoxRefIds:
         description: target box reference IDs that the rule applies to.
         type: array
@@ -1077,19 +1108,19 @@ definitions:
         description: If true, `ignoreSubspaces` enforces that the relationship between a source item and any target object must be direct for the rule to apply, either between two items that are direct members of the same box, or between an item and its direct parent box. For instance, any items in an inner pack (like from `pack-sequence`) which is then packed in an outer, would not have the rule applied when `ignoreSubspaces` is true.
       operation:
         type: string
-        enum: 
-        - exclude
-        - exclude-all
-        - pack-as-is
-        - irregular
-        - lock-orientation
-        - internal-space
-        - alternate-dimensions
-        - fragile
-        - set-properties
-        - group-pack
-        - pack-sequence
-        - bounded-fill
+        enum:
+          - exclude
+          - exclude-all
+          - pack-as-is
+          - irregular
+          - lock-orientation
+          - internal-space
+          - alternate-dimensions
+          - fragile
+          - set-properties
+          - group-pack
+          - pack-sequence
+          - bounded-fill
         # - compact-pattern
         description: |
           Rule type for this definition. Valid operation values include
@@ -1406,7 +1437,7 @@ definitions:
               }</pre>
             </li>
           <ul>
-      options: 
+      options:
         type: object
         description: additional key-value options to pass for rule based on operation type.
       parameters:
@@ -1415,9 +1446,9 @@ definitions:
         items:
           type: string
     required:
-    - operation
+      - operation
   Point:
-    description: "vector definition used for points, dimensions, and other spacial purposes."
+    description: 'vector definition used for points, dimensions, and other spacial purposes.'
     type: object
     title: Point
     properties:
@@ -1429,7 +1460,7 @@ definitions:
         description: y coordinate, used as width.
         type: number
         default: 0.0
-      z: 
+      z:
         description: z coordinate, used as length.
         type: number
         default: 0.0
@@ -1439,13 +1470,13 @@ definitions:
     properties:
       carrier:
         type: string
-        description: "carrier name for rate table to use"
+        description: 'carrier name for rate table to use'
       service:
         type: string
-        description: "service name for rate table to use"
+        description: 'service name for rate table to use'
       zone:
         type: string
-        description: "zone of rate table to use"
+        description: 'zone of rate table to use'
       rates:
         description: list of prices to use for the weight that corresponds to its index, e.g., [10, 15, 20] would be $10 for 1lb, $15 for 2lbs, $20 for 3lbs.
         type: array
@@ -1461,7 +1492,7 @@ definitions:
         type: number
       basePrice:
         description: The basePrice can be found by estimating the lowest weight-based rate available for a given service, in the example above, solving for basePrice for a $10, 1lb package with the already-solved priceIncreaseRate yields <pre>$10 = $5/lb * 1lb + basePrice<br/>$10 = $5 + basePrice<br/>basePrice = $5</pre>
-        type: number 
+        type: number
       dimFactor:
         type: number
         description: This is the Dimensional Weight divisor. It is given in units of volume per unit weight, e.g., the standard of "139" represents 139 cubic inches per pound, and is used to convert the total volume of a carton into a functional minimum weight to be used when rating the carton. E.g., a carton with dimensions 10" x 10" x 13.9" would yield a volume of 1390 cubic inches. This yields <pre>cartonEffectiveMinimumWeight = 1390in&sup3; / 139in&sup3;/lb<br/>cartonEffectiveMinimumWeight = 10lbs</pre>. To disable when using a preset carrier and zone, set to -1 or a very big number.
@@ -1472,11 +1503,11 @@ definitions:
       originInParent:
         description: the coordinates of the origin of the current subspace translated into its immediate parent.
         allOf:
-        - $ref: "#/definitions/Point"
+          - $ref: '#/definitions/Point'
       parentBoxIndex:
         description: the index (Box.id) of the subspace's parent box.
         type: integer
-      parentItemIndex: 
+      parentItemIndex:
         description: the index (Item.index) of the subspace's parent item, if applicable.
         type: integer
   Image:
@@ -1490,9 +1521,8 @@ definitions:
         description: the image format of the data property.
         type: string
         enum:
-        - svg
-        - png
+          - svg
+          - png
       data:
         description: base64-encoded image data.
         type: string
-
