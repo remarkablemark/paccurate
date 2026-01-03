@@ -2,11 +2,9 @@
 
 set -e -u -o pipefail
 
-PROJECT_VERSION=$(
-  yq '.info.version' src/swagger.yaml
-)
+CURRENT_VERSION=$(yq '.info.version' src/swagger.yaml)
 
-echo "Project Paccurate Swagger version is: $PROJECT_VERSION"
+echo "Current Paccurate Swagger version: $CURRENT_VERSION"
 
 LATEST_VERSION=$(
   curl 'https://api.paccurate.io/static/api/' |
@@ -14,12 +12,12 @@ LATEST_VERSION=$(
   grep -Eo '[0-9]{1,}.[0-9]{1,}.[0-9]{1,}'
 )
 
-echo "Latest Paccurate Swagger version is: $PROJECT_VERSION"
+echo "Latest Paccurate Swagger version: $CURRENT_VERSION"
 
 SWAGGER_URL="https://api.paccurate.io/static/api/$LATEST_VERSION/swagger.yaml"
 SWAGGER_PATH='src/swagger.yaml'
 
-if [[ $PROJECT_VERSION == $LATEST_VERSION ]]; then
+if [[ $CURRENT_VERSION == $LATEST_VERSION ]]; then
   echo "Paccurate Swagger version has not changed. Exiting"
   exit
 fi
@@ -33,11 +31,13 @@ npx prettier --write $SWAGGER_PATH
 echo 'Converting Swagger to types'
 npm run swagger-to-types
 
-echo 'Creating PR'
-BRANCH='feat/types'
+echo 'Creating PR...'
+BRANCH="feat/swagger-$LATEST_VERSION"
 git checkout -b $BRANCH
-git commit -am "feat(types): bump Paccurate Swagger version from $PROJECT_VERSION to $LATEST_VERSION"
-git push origin $BRANCH
+git commit -am \
+  "feat(types): bump Paccurate Swagger version from $CURRENT_VERSION to $LATEST_VERSION"
+  -m "https://api.paccurate.io/static/api/$LATEST_VERSION/swagger.yaml"
+git push --force origin $BRANCH
 gh pr create --assignee remarkablemark --fill --reviewer remarkablemark
 
-git stash pop
+git stash pop || true
