@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -e -u -o pipefail
 
 PROJECT_VERSION=$(
   yq '.info.version' src/swagger.yaml
