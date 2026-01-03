@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/remarkablemark/paccurate/compare/v2.3.0...v2.4.0) (2026-01-03)
+
+
+### Features
+
+* **types:** bump Paccurate Swagger version from 1.8.0 to 1.9.0 ([277d5f3](https://github.com/remarkablemark/paccurate/commit/277d5f3d7bb7a92e23a39b402d368db8d9a41b97))
+
 ## [2.3.0](https://github.com/remarkablemark/paccurate/compare/v2.2.1...v2.3.0) (2025-06-30)
 
 
