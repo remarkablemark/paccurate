@@ -6,11 +6,7 @@ CURRENT_VERSION=$(yq '.info.version' src/swagger.yaml)
 
 echo "Current Paccurate Swagger version: $CURRENT_VERSION"
 
-LATEST_VERSION=$(
-  curl 'https://api.paccurate.io/static/api/' |
-  grep '/swagger.yaml' |
-  grep -Eo '[0-9]{1,}.[0-9]{1,}.[0-9]{1,}'
-)
+LATEST_VERSION=$(curl -s https://api.paccurate.io/static/api/openapi.json | jq .info.version -r)
 
 echo "Latest Paccurate Swagger version: $CURRENT_VERSION"
 
