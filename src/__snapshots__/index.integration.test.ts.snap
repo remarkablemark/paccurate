@@ -31,6 +31,9 @@ exports[`Paccurate sends post request to cloud endpoint 1`] = `
   "totalWeight": 13.5,
   "usedKeyStem": Any<String>,
   "version": Any<String>,
+  "warnings": [
+    "Include orderId and/or requestId in your request for enhanced diagnostics.",
+  ],
 }
 `;
 
@@ -65,6 +68,9 @@ exports[`Paccurate sends post request to default endpoint 1`] = `
   "totalWeight": 13.5,
   "usedKeyStem": Any<String>,
   "version": Any<String>,
+  "warnings": [
+    "Include orderId and/or requestId in your request for enhanced diagnostics.",
+  ],
 }
 `;
 
@@ -99,6 +105,9 @@ exports[`pack sends post request to cloud endpoint 1`] = `
   "totalWeight": 13.5,
   "usedKeyStem": Any<String>,
   "version": Any<String>,
+  "warnings": [
+    "Include orderId and/or requestId in your request for enhanced diagnostics.",
+  ],
 }
 `;
 
@@ -133,5 +142,8 @@ exports[`pack sends post request to default endpoint 1`] = `
   "totalWeight": 13.5,
   "usedKeyStem": Any<String>,
   "version": Any<String>,
+  "warnings": [
+    "Include orderId and/or requestId in your request for enhanced diagnostics.",
+  ],
 }
 `;
