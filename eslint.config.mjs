@@ -53,6 +53,7 @@ export default defineConfig([
       'prettier/prettier': 'error',
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': 'error',
+      'tsdoc/syntax': 'error',
     },
   },
 ])
