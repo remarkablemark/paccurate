@@ -29,11 +29,13 @@ export async function post(url: string, body: Body, options?: RequestInit): Prom
     ...options,
   })
 
-  const data = await response.json()
+  const data = await (response.json() as Promise<Response>)
 
   if (response.ok) {
     return data
   }
 
-  throw new ResponseError(data.code, data.message)
+  const { code, message } = data as ResponseError
+
+  throw new ResponseError(code, message)
 }

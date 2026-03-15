@@ -13,8 +13,12 @@ export interface PackBody extends Body {
  * @returns - Pack response.
  */
 export function pack(body: PackBody, url = 'https://api.paccurate.io/') {
+  /* eslint-disable @typescript-eslint/no-unnecessary-condition */
   const key = body?.key
+
   // @ts-expect-error The operand of a 'delete' operator must be optional.
   delete body?.key
+  /* eslint-enable @typescript-eslint/no-unnecessary-condition */
+
   return post(url, body, { headers: { Authorization: `apikey ${key}` } })
 }

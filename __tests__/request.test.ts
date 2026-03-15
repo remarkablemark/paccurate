@@ -1,7 +1,7 @@
 import type { Response } from 'node-fetch'
 import fetch from 'node-fetch'
 
-import { post } from './request'
+import { post } from '../src/request'
 
 jest.mock('node-fetch')
 const mockedFetch = jest.mocked(fetch)

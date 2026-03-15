@@ -11,11 +11,13 @@ const config: Config = {
     },
   },
   moduleFileExtensions: ['js', 'ts'],
-  preset: 'ts-jest',
   reporters:
     process.env.CI === 'true' ? [['github-actions', { silent: false }], 'summary'] : undefined,
   setupFiles: ['dotenv/config'],
   testEnvironment: 'node',
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.test.json' }],
+  },
 }
 
 export default config

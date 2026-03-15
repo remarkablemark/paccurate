@@ -1,5 +1,6 @@
-import { type Body, Paccurate, pack, type PackBody } from '.'
+import { type Body, Paccurate, pack, type PackBody } from '../src'
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const PACCURATE_API_KEY = process.env.PACCURATE_API_KEY!
 
 const it = PACCURATE_API_KEY ? test : test.skip
@@ -19,6 +20,8 @@ const body: Body = {
   ],
   boxTypeSets: ['customer'],
 }
+
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 describe('Paccurate', () => {
   it('sends post request to default endpoint', async () => {
