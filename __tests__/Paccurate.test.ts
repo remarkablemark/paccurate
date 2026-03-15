@@ -1,13 +1,12 @@
-import { Paccurate } from './Paccurate'
-import { post } from './request'
-import type { Response } from './types'
+import { Paccurate, type Response } from '../src'
+import { post } from '../src/request'
 
 const mockedPost = jest.mocked(post)
 const apiKey = 'apiKey'
 const body = {}
 const data = { host: 'api.paccurate.io' } as Response
 
-jest.mock('./request', () => ({
+jest.mock('../src/request', () => ({
   post: jest.fn(),
 }))
 

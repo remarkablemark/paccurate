@@ -1,4 +1,4 @@
-import { Paccurate, pack } from '.'
+import { Paccurate, pack } from '../src'
 
 describe('Paccurate', () => {
   it('exports class', () => {
