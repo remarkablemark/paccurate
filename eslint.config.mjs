@@ -15,7 +15,7 @@ export default defineConfig([
   includeIgnoreFile(gitignorePath),
 
   {
-    ignores: ['cjs', 'esm', 'src/swagger.ts'],
+    ignores: ['cjs', 'esm', 'src/openapi.ts'],
   },
 
   {
