@@ -1,4 +1,4 @@
-name: swagger
+name: openapi
 on:
   schedule:
     # run daily: https://crontab.cronhub.io/
@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  swagger:
+  openapi:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -32,7 +32,7 @@ jobs:
         env:
           HUSKY: 0
 
-      - name: Update Swagger
-        run: bash scripts/swagger.sh
+      - name: Update OpenAPI
+        run: bash scripts/openapi.sh
         env:
           GH_TOKEN: ${{ github.token }}

@@ -6,9 +6,9 @@
 [![build](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablemark/paccurate/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/remarkablemark/paccurate/branch/master/graph/badge.svg?token=LQAQTQE0QI)](https://codecov.io/gh/remarkablemark/paccurate)
 
-Node.js client library for [Paccurate](https://paccurate.io/). The types are generated from [Paccurate Swagger](https://api.paccurate.io/static/api/).
+Node.js client library for [Paccurate](https://paccurate.io/). The types are generated from [Paccurate OpenAPI](https://api.paccurate.io/static/api/).
 
-See [docs](https://remarkabl.org/paccurate/) and [demo](https://replit.com/@remarkablemark/paccurate).
+See [docs](https://remarkabl.org/paccurate/).
 
 ## Quick Start
 
@@ -143,9 +143,9 @@ import type { Body, Response } from 'paccurate'
 
 ### v2
 
-Updated Paccurate Swagger version from [1.7.0](https://api.paccurate.io/static/api/1.7.0/swagger.yaml) to [1.7.1](https://api.paccurate.io/static/api/1.7.1/swagger.yaml).
+Updated Paccurate OpenAPI version from 1.7.0 to 1.7.1.
 
-**BREAKING CHANGE:** Pack property `key` has been removed from Swagger.
+**BREAKING CHANGE:** Pack property `key` has been removed from the OpenAPI schema.
 
 ## Contributing
 
