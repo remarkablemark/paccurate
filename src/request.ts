@@ -1,7 +1,7 @@
 import type { RequestInit } from 'node-fetch'
 import fetch from 'node-fetch'
 
-import type { Body, Response } from './types'
+import type { Body, ErrorResponse, Response } from './types'
 
 class ResponseError extends Error {
   constructor(
@@ -29,13 +29,13 @@ export async function post(url: string, body: Body, options?: RequestInit): Prom
     ...options,
   })
 
-  const data = await (response.json() as Promise<Response>)
+  const data = await (response.json() as Promise<ErrorResponse | Response>)
 
   if (response.ok) {
-    return data
+    return data as Response
   }
 
-  const { code, message } = data as ResponseError
+  const { code, message } = data as ErrorResponse
 
   throw new ResponseError(code, message)
 }
