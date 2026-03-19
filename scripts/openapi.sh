@@ -35,7 +35,7 @@ mv "$LATEST_OPENAPI" "$OPENAPI_PATH"
 npx prettier --write "$OPENAPI_PATH"
 
 echo 'Converting OpenAPI to types'
-npm run openapi-to-types
+npm run build:types
 
 echo 'Creating PR...'
 BRANCH="feat/openapi-$LATEST_VERSION"
