@@ -111,6 +111,10 @@ export interface paths {
                             responseFingerprint?: string;
                             /** @description a unique identifier for this pack transaction, which can be used to directly retrieve the pack via the Paccurate Manager. */
                             packUuid?: string;
+                            /** @description Additional properties of the pack request which are all returned in the response. */
+                            properties?: {
+                                [key: string]: unknown;
+                            };
                         };
                     };
                 };
@@ -440,6 +444,10 @@ export interface components {
              * @enum {string}
              */
             valueTiebreaker: "volume" | "weight";
+            /** @description Additional properties of the pack request which are all returned in the response. */
+            properties?: {
+                [key: string]: unknown;
+            };
             /**
              * @description Optional timeout for request computation, will be reduced to endpoint maximum if in excess of published timeout.
              * @example 30
