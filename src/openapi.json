@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "paccurate.io",
-    "version": "1.9.1"
+    "version": "1.9.2"
   },
   "servers": [
     {
@@ -199,6 +199,11 @@
                     "packUuid": {
                       "type": "string",
                       "description": "a unique identifier for this pack transaction, which can be used to directly retrieve the pack via the Paccurate Manager."
+                    },
+                    "properties": {
+                      "type": "object",
+                      "additionalProperties": true,
+                      "description": "Additional properties of the pack request which are all returned in the response."
                     }
                   }
                 }
@@ -643,6 +648,11 @@
             "description": "The tiebreaker to use in the event to box type choices are otherwise completely equal. Default is \"volume\", alternative is \"weight\".",
             "default": "volume",
             "enum": ["volume", "weight"]
+          },
+          "properties": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Additional properties of the pack request which are all returned in the response."
           },
           "timeout": {
             "type": "number",
