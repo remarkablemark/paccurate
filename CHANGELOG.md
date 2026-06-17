@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.2](https://github.com/remarkablemark/paccurate/compare/v2.4.1...v2.4.2) (2026-06-16)
+
+
+### Build System
+
+* **types:** bump Paccurate OpenAPI version from 1.9.1 to 1.9.2 ([#1176](https://github.com/remarkablemark/paccurate/issues/1176)) ([2cea3d7](https://github.com/remarkablemark/paccurate/commit/2cea3d7ed5b6b74f8ab1e9060b1f61f1ee22c348))
+
 ## [2.4.1](https://github.com/remarkablemark/paccurate/compare/v2.4.0...v2.4.1) (2026-03-19)
 
 ### Code Refactoring
