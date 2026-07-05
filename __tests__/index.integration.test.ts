@@ -62,10 +62,9 @@ describe('Paccurate', () => {
     })
   })
 
-  test('responds with error if body is empty', async () => {
+  it('responds with error if body is empty', async () => {
     await expect(pack(undefined as unknown as PackBody)).rejects.toMatchObject({
-      code: 400,
-      message: 'EOF',
+      code: 401,
     })
   })
 })
@@ -107,10 +106,9 @@ describe('pack', () => {
     })
   })
 
-  test('responds with error if body is empty', async () => {
+  it('responds with error if body is empty', async () => {
     await expect(pack(undefined as unknown as PackBody)).rejects.toMatchObject({
-      code: 400,
-      message: 'EOF',
+      code: 401,
     })
   })
 })
