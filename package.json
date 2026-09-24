@@ -49,7 +49,7 @@
     "@commitlint/config-conventional": "21.2.3",
     "@eslint/js": "10.0.1",
     "@types/jest": "30.0.0",
-    "@types/node": "26.5.1",
+    "@types/node": "26.6.2",
     "@types/node-fetch": "2.6.13",
     "dotenv": "18.0.0",
     "eslint": "10.11.0",
