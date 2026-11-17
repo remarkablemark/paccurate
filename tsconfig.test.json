@@ -9,6 +9,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "allowJs": true,
+    "skipLibCheck": true,
     "rootDir": "."
   },
   "include": ["__tests__", "cjs", "esm", "src", "*.mts", "*.ts"]
