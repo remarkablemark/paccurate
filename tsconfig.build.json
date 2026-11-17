@@ -9,6 +9,7 @@
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "rootDir": "src",
     "outDir": "cjs"
   },
   "include": ["src"]
