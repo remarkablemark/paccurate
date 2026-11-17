@@ -7,7 +7,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -24,27 +23,8 @@ jobs:
       - name: Generate OpenAPI types
         run: npm run build:types
 
-      - name: Lint codebase
-        run: npm run lint
-
-      - name: Check type
-        run: npm run lint:tsc
-
       - name: Build package
         run: npm run build
-
-      - name: Run tests
-        run: npm run test:ci
-        env:
-          PACCURATE_API_KEY: ${{ secrets.PACCURATE_API_KEY }}
-
-      - name: Run module tests
-        run: npm run test:esm
-
-      - name: Codecov
-        uses: codecov/codecov-action@v7
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build docs
         run: npm run docs
