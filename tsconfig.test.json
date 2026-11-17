@@ -3,7 +3,7 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
     "module": "nodenext",
-    "types": ["jest", "node"],
+    "types": ["vitest/globals", "node"],
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "isolatedModules": true,

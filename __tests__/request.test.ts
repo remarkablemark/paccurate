@@ -3,8 +3,8 @@ import fetch from 'node-fetch'
 
 import { post } from '../src/request'
 
-jest.mock('node-fetch')
-const mockedFetch = jest.mocked(fetch)
+vi.mock('node-fetch')
+const mockedFetch = vi.mocked(fetch)
 
 const apiUrl = 'https://api.paccurate.io/'
 const cloudApiUrl = 'https://cloud.api.paccurate.io/'
@@ -12,7 +12,7 @@ const cloudApiUrl = 'https://cloud.api.paccurate.io/'
 const body = { boxTypeSets: ['customer' as const] }
 
 const response = {
-  json: jest.fn(),
+  json: vi.fn(),
   ok: true,
 }
 

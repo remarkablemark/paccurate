@@ -1,13 +1,13 @@
 import { pack, type Response } from '../src'
 import { post } from '../src/request'
 
-const mockedPost = jest.mocked(post)
+const mockedPost = vi.mocked(post)
 const key = 'apikey'
 const data = { host: 'api.paccurate.io' } as Response
 const options = { headers: { Authorization: `apikey ${key}` } }
 
-jest.mock('../src/request', () => ({
-  post: jest.fn(),
+vi.mock('../src/request', () => ({
+  post: vi.fn(),
 }))
 
 beforeEach(() => {

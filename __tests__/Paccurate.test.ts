@@ -1,13 +1,13 @@
 import { Paccurate, type Response } from '../src'
 import { post } from '../src/request'
 
-const mockedPost = jest.mocked(post)
+const mockedPost = vi.mocked(post)
 const apiKey = 'apiKey'
 const body = {}
 const data = { host: 'api.paccurate.io' } as Response
 
-jest.mock('../src/request', () => ({
-  post: jest.fn(),
+vi.mock('../src/request', () => ({
+  post: vi.fn(),
 }))
 
 beforeEach(() => {

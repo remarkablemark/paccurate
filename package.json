@@ -22,10 +22,10 @@
     "lint:tsc": "tsc --project tsconfig.test.json",
     "prepare": "husky",
     "prepublishOnly": "npm run lint && npm run lint:tsc && npm run test:ci && npm run test:esm && npm run clean && npm run build",
-    "test": "jest",
-    "test:ci": "CI=true jest --ci --colors --coverage",
+    "test": "vitest run",
+    "test:ci": "CI=true npm test",
     "test:esm": "npm run build:esm && node --test **/*.test.mjs",
-    "test:watch": "jest --watch"
+    "test:watch": "vitest"
   },
   "repository": {
     "type": "git",
@@ -49,24 +49,21 @@
     "@commitlint/config-conventional": "21.2.4",
     "@eslint/js": "10.0.1",
     "@hey-api/openapi-ts": "0.99.0",
-    "@types/jest": "30.0.0",
     "@types/node": "26.6.6",
     "@types/node-fetch": "2.6.13",
+    "@vitest/coverage-v8": "5.1.0",
     "dotenv": "18.0.10",
     "eslint": "10.15.0",
     "eslint-plugin-prettier": "5.5.7",
     "eslint-plugin-simple-import-sort": "14.0.0",
     "eslint-plugin-tsdoc": "0.5.4",
-    "globals": "17.14.0",
     "husky": "9.1.7",
-    "jest": "30.5.2",
     "lint-staged": "17.6.1",
     "prettier": "3.10.1",
-    "ts-jest": "29.4.15",
-    "ts-node": "10.9.2",
     "typedoc": "0.28.20",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.73.0"
+    "typescript-eslint": "8.73.0",
+    "vitest": "5.1.0"
   },
   "peerDependencies": {
     "@types/node-fetch": "2"
