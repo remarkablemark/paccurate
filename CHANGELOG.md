@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.5.0](https://github.com/remarkablemark/paccurate/compare/v2.4.2...v2.5.0) (2026-11-17)
+
+
+### Features
+
+* **types:** bump Paccurate OpenAPI version from 1.9.2 to 1.9.3 ([#1261](https://github.com/remarkablemark/paccurate/issues/1261)) ([6d7113f](https://github.com/remarkablemark/paccurate/commit/6d7113f447ea8b317a8a865d3e3f76ef740a2b7a))
+
+
+### Build System
+
+* migrate from `openapi-typescript` to `@hey-api/openapi-ts` ([#1264](https://github.com/remarkablemark/paccurate/issues/1264)) ([3c1fa6c](https://github.com/remarkablemark/paccurate/commit/3c1fa6cff61d46933ba8c9b6de6c96335e398748))
+
 ## [2.4.2](https://github.com/remarkablemark/paccurate/compare/v2.4.1...v2.4.2) (2026-06-16)
 
 
