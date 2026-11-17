@@ -60,13 +60,13 @@
     "globals": "17.14.0",
     "husky": "9.1.7",
     "jest": "30.5.2",
-    "lint-staged": "17.6.0",
+    "lint-staged": "17.6.1",
     "prettier": "3.10.1",
     "ts-jest": "29.4.15",
     "ts-node": "10.9.2",
     "typedoc": "0.28.20",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.72.2"
+    "typescript-eslint": "8.73.0"
   },
   "peerDependencies": {
     "@types/node-fetch": "2"
