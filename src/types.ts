@@ -1,4 +1,4 @@
-import type { components, paths } from './openapi'
+import type { Error, Pack, PostResponse } from './client'
 
 type Primitive = bigint | boolean | null | number | string | symbol | undefined
 
@@ -12,8 +12,6 @@ type DeepPartial<T> = T extends Primitive
           [K in keyof T]?: DeepPartial<T[K]>
         }
 
-export type Body = DeepPartial<components['schemas']['Pack']>
-export type ErrorResponse = components['schemas']['Error']
-export type Response = DeepPartial<
-  paths['/']['post']['responses']['200']['content']['application/json']
->
+export type Body = DeepPartial<Pack>
+export type ErrorResponse = Error
+export type Response = DeepPartial<PostResponse>
