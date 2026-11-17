@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Paccurate sends post request to cloud endpoint 1`] = `
+exports[`Paccurate > sends post request to cloud endpoint 1`] = `
 {
   "boxTypeChoiceGoalUsed": "lowest-cost",
   "boxes": Any<Array>,
@@ -37,7 +37,7 @@ exports[`Paccurate sends post request to cloud endpoint 1`] = `
 }
 `;
 
-exports[`Paccurate sends post request to default endpoint 1`] = `
+exports[`Paccurate > sends post request to default endpoint 1`] = `
 {
   "boxTypeChoiceGoalUsed": "lowest-cost",
   "boxes": Any<Array>,
@@ -74,7 +74,7 @@ exports[`Paccurate sends post request to default endpoint 1`] = `
 }
 `;
 
-exports[`pack sends post request to cloud endpoint 1`] = `
+exports[`pack > sends post request to cloud endpoint 1`] = `
 {
   "boxTypeChoiceGoalUsed": "lowest-cost",
   "boxes": Any<Array>,
@@ -111,7 +111,7 @@ exports[`pack sends post request to cloud endpoint 1`] = `
 }
 `;
 
-exports[`pack sends post request to default endpoint 1`] = `
+exports[`pack > sends post request to default endpoint 1`] = `
 {
   "boxTypeChoiceGoalUsed": "lowest-cost",
   "boxes": Any<Array>,
